@@ -1,0 +1,4 @@
+[mcp_servers.clean_process_ended]
+command = "node"
+args = ["/absolute/path/to/clean-process-ended/bin/clean-process-ended-mcp.js"]
+env = { CPE_HOST_PROFILE = "codex" }

@@ -1,0 +1,53 @@
+{
+  "host": {
+    "expectedProfile": null
+  },
+  "watcher": {
+    "enabled": false,
+    "intervalSeconds": 300,
+    "writeSnapshots": true
+  },
+  "ledger": {
+    "maxSnapshots": 120,
+    "maxEvents": 400,
+    "storeCommandLines": false,
+    "storeAllProcesses": false
+  },
+  "scan": {
+    "minAgeMinutes": 20,
+    "cpuIdlePercent": 1,
+    "maxCommandLineLength": 420
+  },
+  "cleanup": {
+    "defaultScope": "owned_current_session",
+    "requireConfirmToken": true,
+    "realExecutionEnabled": false,
+    "realExecutionSourceMustBeInstallConfig": true,
+    "realExecutionAcknowledgement": null,
+    "defaultSignal": "SIGTERM",
+    "allowTreeKill": false,
+    "tokenTtlSeconds": 900,
+    "graceMs": 1200,
+    "browserRequiresExplicitPid": true
+  },
+  "matching": {
+    "codexKeywords": ["codex", "codex.exe", "codex app-server", ".codex", "openai/codex", "openai\\codex"],
+    "mcpKeywords": ["mcp-server", "mcp_servers", "modelcontextprotocol", "@modelcontextprotocol", "chrome-devtools-mcp", "playwright-mcp", "mcp-sqlalchemy", "node_repl", ".browser_data"]
+  },
+  "profiles": {
+    "hosts": {
+      "codex": { "enabled": true },
+      "claude_code": { "enabled": true },
+      "gemini_cli": { "enabled": true },
+      "generic_mcp_host": { "enabled": true }
+    },
+    "tools": {
+      "node_npx": { "enabled": true },
+      "python_uvx": { "enabled": true },
+      "chrome_devtools": { "enabled": true },
+      "playwright": { "enabled": true },
+      "dev_server": { "enabled": true },
+      "repl_shell": { "enabled": true }
+    }
+  }
+}

@@ -1,0 +1,4 @@
+[mcp_servers.clean_process_ended]
+command = "npx"
+args = ["-y", "--package", "clean-process-ended", "clean-process-ended-mcp"]
+env = { CPE_HOST_PROFILE = "codex" }

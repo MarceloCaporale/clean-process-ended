@@ -1,0 +1,10 @@
+{
+  "clean-process-ended": {
+    "type": "stdio",
+    "command": "npx",
+    "args": ["-y", "--package", "clean-process-ended", "clean-process-ended-mcp"],
+    "env": {
+      "CPE_HOST_PROFILE": "claude_code"
+    }
+  }
+}

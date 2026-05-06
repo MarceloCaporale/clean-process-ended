@@ -1,0 +1,7 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MarceloCaporale/clean-process-ended/docs/fixtures/codex-agent-mem/process_janitor_receipt.schema.json",
+  "title": "clean-process-ended process janitor receipt schema alias",
+  "description": "Compatibility alias for the canonical public schema in schemas/process_janitor_receipt.schema.json.",
+  "$ref": "https://github.com/MarceloCaporale/clean-process-ended/schemas/process_janitor_receipt.schema.json"
+}

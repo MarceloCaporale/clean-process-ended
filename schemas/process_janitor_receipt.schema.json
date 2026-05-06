@@ -1,0 +1,66 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MarceloCaporale/clean-process-ended/schemas/process_janitor_receipt.schema.json",
+  "title": "clean-process-ended process janitor receipt",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "source",
+    "external_receipt_kind",
+    "mode",
+    "cleanup_real_executed",
+    "evidence_sha256_scope",
+    "evidence_sha256",
+    "summary",
+    "counts",
+    "host_profile",
+    "project_key",
+    "session_epoch_id",
+    "created_at",
+    "command_lines_included",
+    "raw_process_output_included",
+    "confirm_token_returned"
+  ],
+  "properties": {
+    "source": { "const": "clean-process-ended" },
+    "external_receipt_kind": { "const": "process_janitor" },
+    "mode": { "enum": ["dry_run", "close_check_dry_run"] },
+    "cleanup_real_executed": { "const": false },
+    "evidence_sha256_scope": {
+      "enum": ["receipt_payload_canonical", "receipt_file", "evidence_bundle"]
+    },
+    "evidence_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "summary": { "type": "string", "minLength": 1 },
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "processes_seen",
+        "candidates",
+        "cleanup_eligible",
+        "cleanup_planned",
+        "cleanup_executed"
+      ],
+      "properties": {
+        "processes_seen": { "type": "integer", "minimum": 0 },
+        "candidates": { "type": "integer", "minimum": 0 },
+        "cleanup_eligible": { "type": "integer", "minimum": 0 },
+        "cleanup_planned": { "type": "integer", "minimum": 0 },
+        "cleanup_executed": { "const": 0 }
+      }
+    },
+    "host_profile": {
+      "type": ["string", "null"],
+      "enum": ["codex", "claude_code", "gemini_cli", "generic_mcp_host", null]
+    },
+    "project_key": { "type": ["string", "null"] },
+    "session_epoch_id": { "type": ["string", "null"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "command_lines_included": { "const": false },
+    "raw_process_output_included": { "const": false },
+    "confirm_token_returned": { "const": false }
+  }
+}

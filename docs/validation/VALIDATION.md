@@ -1,0 +1,32 @@
+# Validation
+
+Validation is evidence-scoped. A host is only described at the level actually observed.
+
+## Evidence levels
+
+- `L0 static`: profile or sample exists, with no host-specific validation claim.
+- `L1 automated`: automated unit or CLI validation passes.
+- `L2 stdio smoke`: MCP stdio smoke test passes outside a named host.
+- `L3 native tools`: the named host session can call MCP tools directly with the expected profile.
+- `L4 reviewed evidence`: external audit bundle or reproducible evidence package reviewed.
+
+## Current v0.7.2 status
+
+| Host | Profile | Evidence level | Status |
+| --- | --- | --- | --- |
+| Codex | `codex` | L3 native tools | Validated locally; dry-run only. |
+| Claude Code | `claude_code` | L3 native tools | Validated locally; dry-run only. |
+| Gemini CLI | `gemini_cli` | L3 native tools | Validated locally; dry-run only. |
+| Generic MCP Host | `generic_mcp_host` | L1-L2 automated/stdio smoke | Diagnostic profile only; host-specific validation requires separate evidence. |
+
+## Safety requirements for validation
+
+- Do not execute real cleanup.
+- Do not use `--no-dry-run`.
+- Do not include full command lines in public evidence.
+- Do not include raw process output, env vars, tokens or secrets.
+- Keep `related_unowned` and `unknown_owner` report-only.
+
+## Evidence files
+
+Host notes live in `docs/validation/evidence/`. Release-gate notes live in `docs/verification/`.

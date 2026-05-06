@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MarceloCaporale/clean-process-ended/schemas/audit_bundle.schema.json",
+  "title": "clean-process-ended audit bundle summary",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "product",
+    "version",
+    "generatedAt",
+    "runId",
+    "config",
+    "session",
+    "watcher",
+    "processScopeReport",
+    "processCleanupCandidates",
+    "processCleanupDryRun",
+    "safety"
+  ],
+  "properties": {
+    "product": { "const": "clean-process-ended" },
+    "version": { "type": "string" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "runId": { "type": "string" },
+    "client": { "type": ["string", "null"] },
+    "hostProfile": { "type": ["string", "null"] },
+    "config": { "type": "object" },
+    "session": { "type": "object" },
+    "watcher": { "type": "object" },
+    "profiles": { "type": "object" },
+    "processScopeReport": { "type": "object" },
+    "processCleanupCandidates": { "type": "object" },
+    "processCleanupDryRun": { "type": "object" },
+    "safety": {
+      "type": "object",
+      "required": [
+        "cleanupRealExecuted",
+        "noDryRunUsed",
+        "commandLinesIncluded",
+        "rawProcessOutputIncluded",
+        "secretsIncluded",
+        "liveConfirmTokenReturned"
+      ],
+      "properties": {
+        "cleanupRealExecuted": { "const": false },
+        "noDryRunUsed": { "const": false },
+        "commandLinesIncluded": { "const": false },
+        "rawProcessOutputIncluded": { "const": false },
+        "secretsIncluded": { "const": false },
+        "liveConfirmTokenReturned": { "const": false }
+      }
+    }
+  }
+}

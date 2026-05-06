@@ -6,7 +6,7 @@ Before publishing, run:
 npm run public-beta-candidate
 ```
 
-This includes syntax checks, tests, MCP stdio smoke validation, strict package validation, public-tree checks, production dependency audit at moderate-or-higher severity, `npm pack --dry-run`, and an installed-tarball smoke test.
+This includes ESLint, syntax checks, tests, MCP stdio smoke validation, strict package validation, public-tree checks, production dependency audit at moderate-or-higher severity, `npm pack --dry-run`, and an installed-tarball smoke test.
 
 For tagged releases, registry submissions or npm publication, do not rely on local evidence alone. Validate the installed package in each intended MCP host first. The release checklist is `docs/release-checklist.md`; the release sequence is `docs/release-process.md`.
 
@@ -24,11 +24,12 @@ For tagged releases, registry submissions or npm publication, do not rely on loc
 - The support matrix lists only hosts with current public evidence plus generic MCP-host behavior.
 - `AGENTS.md`, `docs/quickstart.md`, `docs/design-decisions.md`, `docs/validation/`, `schemas/` and `examples/` are present.
 
-## Current Host Evidence For v0.7.2
+## Current Host Evidence For v0.7.3
 
-- Codex: current local validation completed after restart against v0.7.2, dry-run only.
-- Claude Code: current local native MCP validation completed against v0.7.2, dry-run only.
-- Gemini CLI: current local native MCP validation completed against v0.7.2, dry-run only. Public evidence is summary-level; capture raw tool JSON before external-audit parity claims.
+- Codex: current local validation completed after restart, dry-run only.
+- Claude Code: current local native MCP validation completed, dry-run only.
+- Gemini CLI: current local native MCP validation completed, dry-run only. Public evidence is summary-level; capture raw tool JSON before external-audit parity claims.
+- Qwen Code CLI: current local native MCP validation completed with Ollama-backed Qwen models through a non-destructive MCP tool workflow. Public evidence is summary-level; capture full dry-run close-check evidence before claiming parity with Codex, Claude or Gemini dry-run evidence.
 
 Do not upgrade any host status in `docs/support-matrix.md` without a matching evidence bundle or report.
 
@@ -42,7 +43,7 @@ Do not upgrade any host status in `docs/support-matrix.md` without a matching ev
 - `README_JA.md`
 - `AGENTS.md`
 - `CHANGELOG.md`
-- `RELEASE_NOTES_v0.7.2.md`
+- `RELEASE_NOTES_v0.7.3.md`
 - `SECURITY.md`
 - `SUPPORT.md`
 - `docs/support-matrix.md`
@@ -53,8 +54,8 @@ Do not upgrade any host status in `docs/support-matrix.md` without a matching ev
 - `docs/release-process.md`
 - `docs/public-positioning.md`
 - `docs/verification/README.md`
-- `docs/verification/v0.7.2/README.md`
-- `docs/verification/v0.7.2/release-gate-summary.md`
+- `docs/verification/v0.7.3/README.md`
+- `docs/verification/v0.7.3/release-gate-summary.md`
 - `schemas/process_janitor_receipt.schema.json`
 - `schemas/audit_bundle.schema.json`
 - `examples/README.md`

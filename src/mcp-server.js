@@ -41,7 +41,7 @@ export async function runMcpServer({ configPath, dataDir } = {}) {
 
   const server = new McpServer({
     name: "clean-process-ended",
-    version: "0.7.2",
+    version: "0.7.3",
   });
 
   await primeRuntimeBaseline(runtime);

@@ -225,7 +225,6 @@ export function analyzeProcess(
       expectedHostProfile &&
       managedRecordHostProfile === expectedHostProfile,
   );
-  const managedIdentityBroken = Boolean(managedPidReuseMismatch || managedRecordMissingHostProfile || managedHostProfileMismatch);
 
   const signals = {
     codexSelf,
@@ -351,7 +350,6 @@ export function analyzeProcess(
     preExistingAtBaseline,
     bornAfterSessionStart,
     hostProfiles,
-    strongHostProfiles,
     toolProfiles,
     strongToolProfiles,
     hasCodexAncestor,
@@ -529,7 +527,6 @@ function resolveInternalOwnershipLevel({
   preExistingAtBaseline,
   bornAfterSessionStart,
   hostProfiles,
-  strongHostProfiles,
   toolProfiles,
   strongToolProfiles,
   hasCodexAncestor,
@@ -677,10 +674,6 @@ function publicProfileMatch(match) {
     reasons: match.reasons,
     safety: match.safety,
   };
-}
-
-function hasProfileReason(profile, prefix) {
-  return (profile?.reasons || []).some((reason) => String(reason).startsWith(prefix));
 }
 
 function hasStrongHostChainReason(profile) {

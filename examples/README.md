@@ -14,3 +14,4 @@ Host folders:
 - `codex/`
 - `claude-code/`
 - `gemini-cli/`
+- `qwen-code/`

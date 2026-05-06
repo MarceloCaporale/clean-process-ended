@@ -4,6 +4,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { loadConfig, REAL_CLEANUP_ACKNOWLEDGEMENT } from "../src/config.js";
+import { isSameFilesystemPath } from "../src/paths.js";
 import { autoCleanupStatus } from "../src/policy.js";
 
 function withTempCwd(callback) {
@@ -19,10 +20,11 @@ function withTempCwd(callback) {
 
 test("project config is ignored by default", () => {
   withTempCwd((dir) => {
+    const expectedPath = path.join(dir, ".clean-process-ended.json");
     fs.writeFileSync(path.join(dir, ".clean-process-ended.json"), JSON.stringify({ scan: { minAgeMinutes: 987 } }));
     const loaded = loadConfig();
     assert.notEqual(loaded.config.scan.minAgeMinutes, 987);
-    assert.equal(loaded.loadedPaths.includes(path.join(dir, ".clean-process-ended.json")), false);
+    assert.equal(hasLoadedPath(loaded, expectedPath), false);
     assert.equal(loaded.blockedPaths[0].reason, "project_config_requires_CPE_TRUST_PROJECT_CONFIG_or_explicit_config");
   });
 });
@@ -32,16 +34,34 @@ test("project config loads only with explicit opt-in", () => {
   try {
     process.env.CPE_TRUST_PROJECT_CONFIG = "1";
     withTempCwd((dir) => {
-      fs.writeFileSync(path.join(dir, ".clean-process-ended.json"), JSON.stringify({ scan: { minAgeMinutes: 987 } }));
+      const expectedPath = path.join(dir, ".clean-process-ended.json");
+      fs.writeFileSync(expectedPath, JSON.stringify({ scan: { minAgeMinutes: 987 } }));
       const loaded = loadConfig();
       assert.equal(loaded.config.scan.minAgeMinutes, 987);
-      assert.ok(loaded.loadedPaths.includes(path.join(dir, ".clean-process-ended.json")));
+      assert.ok(hasLoadedPath(loaded, expectedPath));
       assert.equal(loaded.blockedPaths.length, 0);
     });
   } finally {
     if (previous === undefined) delete process.env.CPE_TRUST_PROJECT_CONFIG;
     else process.env.CPE_TRUST_PROJECT_CONFIG = previous;
   }
+});
+
+test("filesystem path identity handles realpath aliases", () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "cpe-path-"));
+  const targetDir = path.join(dir, "target");
+  const aliasDir = path.join(dir, "alias");
+  fs.mkdirSync(targetDir);
+  try {
+    fs.symlinkSync(targetDir, aliasDir, "dir");
+  } catch {
+    return;
+  }
+
+  const targetFile = path.join(targetDir, "config.json");
+  const aliasFile = path.join(aliasDir, "config.json");
+  fs.writeFileSync(targetFile, "{}");
+  assert.ok(isSameFilesystemPath(targetFile, aliasFile));
 });
 
 test("CPE_HOST_PROFILE sets expected host binding", () => {
@@ -218,3 +238,7 @@ test("install config without acknowledgement cannot enable real cleanup", () => 
     else process.env.CLEAN_PROCESS_ENDED_HOME = previousHome;
   }
 });
+
+function hasLoadedPath(loaded, expectedPath) {
+  return loaded.loadedPaths.some((loadedPath) => isSameFilesystemPath(loadedPath, expectedPath));
+}

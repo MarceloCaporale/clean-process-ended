@@ -185,16 +185,20 @@ async function observeChildProcess(pid) {
     if (attempt > 0) await delay(120);
     try {
       const direct = await scanProcessByPid(pid, { timeoutMs: 3000 });
-      if (direct?.createTimeMs && direct?.name) return direct;
+      if (hasObservedProcessIdentity(direct)) return direct;
       const snapshot = await scanProcesses();
       const proc = (snapshot.processes || []).find((item) => item.pid === pid);
-      if (proc?.createTimeMs && proc?.name) return proc;
+      if (hasObservedProcessIdentity(proc)) return proc;
       if (proc && attempt === 4) return proc;
     } catch {
       // Retry; process scanners can race with very young child processes.
     }
   }
   return null;
+}
+
+function hasObservedProcessIdentity(proc) {
+  return Boolean(proc?.pid && (proc.name || proc.commandLine || proc.executablePath));
 }
 
 function hashText(value) {

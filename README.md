@@ -2,9 +2,11 @@
 
 Other languages: [Español](./README_ES.md) | [Deutsch](./README_DE.md) | [Português do Brasil](./README_PT_BR.md) | [中文](./README_ZH.md) | [日本語](./README_JA.md)
 
-**Ownership-first local MCP process janitor for AI coding agents, built for Codex, Claude Code, Gemini CLI and MCP-compatible host workflows where subprocesses can outlive the useful work.**
+**Ownership-first local MCP process janitor for AI coding agents, built for Codex Desktop, Claude Code, Gemini CLI, Qwen Code CLI with Ollama-backed Qwen models, and MCP-compatible host workflows where subprocesses can outlive the useful work.**
 
-`clean-process-ended` inspects local subprocesses related to agent and MCP sessions, separates session ownership from weak similarity signals, and produces conservative dry-run cleanup plans before any environment action is considered.
+`clean-process-ended` inspects local subprocesses related to agent and MCP sessions, separates session ownership from weak similarity signals, and produces reviewable dry-run cleanup plans backed by reproducible evidence before any environment action is considered.
+
+`clean-process-ended` runs as a local stdio MCP server and has been validated with Codex Desktop, Claude Code, Gemini CLI, and Qwen Code CLI using Ollama-backed Qwen models. Other MCP-compatible hosts can be tested through the generic MCP profile.
 
 The project is designed for local MCP and coding-agent workflows where subprocesses, browser helpers, devtools, local servers or MCP servers can keep running after the host session or task has ended. It classifies processes by ownership evidence instead of process-name similarity, then reports what is actionable, blocked, related or unknown.
 
@@ -12,7 +14,7 @@ It does not send process evidence to a remote service, does not store full comma
 
 ## What you get
 
-- **Agent process visibility**: see local subprocesses related to Codex, Claude Code, Gemini CLI, generic MCP hosts and future validated runtimes without relying on process-name cleanup.
+- **Agent process visibility**: see local subprocesses related to Codex Desktop, Claude Code, Gemini CLI, Qwen Code CLI with Ollama-backed Qwen models, generic MCP hosts and future validated runtimes without relying on process-name cleanup.
 - **Ownership-first safety**: classify `owned_current_session`, `related_unowned` and `unknown_owner` before planning anything destructive.
 - **Dry-run close checks**: give agents a concrete end-of-task protocol through `janitor_discovery`, `session_close_check`, reports, candidates and audit bundles.
 - **Reproducible evidence**: generate sanitized receipts, SHA-256 evidence, audit bundles and support-matrix notes for review.
@@ -29,27 +31,40 @@ It does not send process evidence to a remote service, does not store full comma
 
 ## Status
 
-- Version: `0.7.2` beta.
+- Version: `0.7.3` beta.
 - Runtime: Node.js `>=18.17`.
 - Transport: MCP stdio.
 - Cleanup default: dry-run.
 - Automatic cleanup default: disabled.
 - Persistent watcher: not installed by default.
 
-Do not treat beta results as a replacement for operator review. The public v0.7.2 CLI/MCP surface is diagnostic and dry-run oriented; it does not execute real termination from the public CLI/MCP surface.
+Do not treat beta results as a replacement for operator review. The public v0.7.3 CLI/MCP surface provides runtime-validated process hygiene, evidence and dry-run planning; it does not execute real termination from the public CLI/MCP surface.
 
 ## Validation Snapshot
 
-Current v0.7.2 public-beta validation evidence is intentionally framed as dry-run validation, not cleanup-real validation:
+Current v0.7.3 public-beta evidence separates runtime validation metrics from adoption metrics. It proves discovery, reports, evidence and dry-run planning paths; it does not claim cleanup-real validation:
 
 | Area | Current evidence |
 | --- | --- |
 | MCP tool surface | Core close-check, report, explain, policy, audit and managed-lifecycle tools are exposed by the server. |
 | Codex | Native local validation after restart; dry-run only. |
-| Claude Code | Native local MCP validation completed for v0.7.2; dry-run only; sanitized evidence summary available. |
-| Gemini CLI | Native local MCP validation completed for v0.7.2; dry-run only; sanitized evidence summary available. |
+| Claude Code | Native local MCP validation completed; dry-run only; sanitized evidence summary available. |
+| Gemini CLI | Native local MCP validation completed; dry-run only; sanitized evidence summary available. |
+| Qwen Code CLI | Native local MCP validation completed with Ollama-backed Qwen models; non-destructive MCP tool workflow; sanitized evidence summary available. |
 | Public cleanup real | `0` real cleanup executions are part of public validation. |
 | Evidence privacy | Public receipts are designed to exclude full command lines, raw process output, env vars, tokens and secrets. |
+
+## Public Validation Metrics
+
+These are real validation metrics from the public beta line and release gate, not adoption metrics such as stars, forks, downloads or third-party production usage:
+
+- Validated MCP host workflows: `4` (`codex`, `claude_code`, `gemini_cli`, `qwen_code`), including three dry-run close-check workflows and one Qwen Code CLI native non-destructive tool workflow.
+- MCP stdio smoke surface: the shipped server exposes the close-check, report, explain, policy, audit and managed-lifecycle tool catalog.
+- Local release gate: ESLint, syntax checks, Node tests, MCP stdio smoke, strict package validation, public-tree check, dependency audit, `npm pack --dry-run` and installed-tarball smoke.
+- GitHub Actions matrix: configured for Windows, macOS and Linux across Node 18, 20 and 22.
+- Public real-cleanup executions: `0`.
+- Production dependency audit target: `0` moderate-or-higher vulnerabilities.
+- Evidence privacy target: no full command lines, raw process output, env vars, tokens, secrets or live confirm tokens in public receipts.
 
 ## Install
 
@@ -83,19 +98,21 @@ Host profile values currently exposed by the package are:
 - `codex`
 - `claude_code`
 - `gemini_cli`
+- `qwen_code`
 - `generic_mcp_host`
 
 Additional samples are in `samples/` and copy-adaptable examples are in `examples/`.
 
 ## Support Matrix
 
-This matrix describes public profile intent and validation status for v0.7.2. It does not claim cleanup safety beyond the documented policy gates. See `docs/support-matrix.md` and `docs/validation/` for evidence levels and release status.
+This matrix describes public profile intent and validation status for v0.7.3. It does not claim cleanup safety beyond the documented policy gates. See `docs/support-matrix.md` and `docs/validation/` for evidence levels and release status.
 
 | Host | Profile | Public status |
 | --- | --- | --- |
 | Codex | `codex` | Current local validation completed after restart; dry-run only. |
 | Claude Code | `claude_code` | Current local native validation completed; dry-run only. |
 | Gemini CLI | `gemini_cli` | Current local native validation completed; dry-run only. |
+| Qwen Code CLI | `qwen_code` | Current local native validation completed with Ollama-backed Qwen models; non-destructive MCP tool workflow. |
 | Generic MCP Host | `generic_mcp_host` | Diagnostic profile only; host-specific ownership claims require separate evidence. |
 
 ## CLI
@@ -122,7 +139,7 @@ cpe-scan managed-lifecycle --json
 cpe-scan managed-cleanup-dryrun --json
 ```
 
-`managed-cleanup-dryrun` is report-only in v0.7.2.
+`managed-cleanup-dryrun` is report-only in v0.7.3.
 
 ## Agent Close Protocol
 
@@ -137,7 +154,7 @@ Recommended agent behavior:
 
 ## Optional codex-agent-mem Integration
 
-`codex-agent-mem` v1.0.1 and `clean-process-ended` v0.7.2 work independently, but they are designed to complement each other. `codex-agent-mem` preserves task continuity and closure state; `clean-process-ended` records process-hygiene evidence and dry-run janitor receipts. Used together, the recommended close flow is:
+`codex-agent-mem` v1.0.1 and `clean-process-ended` v0.7.3 work independently, but they are designed to complement each other. `codex-agent-mem` preserves task continuity and closure state; `clean-process-ended` records process-hygiene evidence and dry-run janitor receipts. Used together, the recommended close flow is:
 
 1. recover and close continuity with `codex-agent-mem`;
 2. run `clean-process-ended` as a dry-run close check;
@@ -158,7 +175,7 @@ The combined workflow improves user experience by reducing repeated context and 
 
 ## Cleanup Safety
 
-By default, cleanup is dry-run and scoped to `owned_current_session`. In v0.7.2, the public CLI/MCP surface is diagnostic and dry-run oriented: real termination remains non-operable from public CLI/MCP because evidence inputs are intentionally not exposed. The internal real-cleanup gate remains stricter than the public surface and requires all of the following before any termination path:
+By default, cleanup is dry-run and scoped to `owned_current_session`. In v0.7.3, the public CLI/MCP surface provides runtime-validated process hygiene, evidence and dry-run planning: real termination remains non-operable from public CLI/MCP because evidence inputs are intentionally not exposed. The internal real-cleanup gate remains stricter than the public surface and requires all of the following before any termination path:
 
 - an eligible `managed_strong` or `managed_strong_expired` candidate in the current safety policy;
 - trusted install config with `cleanup.realExecutionEnabled=true`;
@@ -195,7 +212,7 @@ Experimental auto-cleanup is opt-in only. It is disabled by default, must be exp
 - `SECURITY.md`: security reporting and support policy.
 - `SUPPORT.md`: public support matrix.
 - `CHANGELOG.md`: release notes.
-- `RELEASE_NOTES_v0.7.2.md`: release notes for v0.7.2.
+- `RELEASE_NOTES_v0.7.3.md`: release notes for v0.7.3.
 
 ## Release Checks
 
@@ -205,9 +222,9 @@ For maintainers preparing tags, GitHub Releases, MCP Registry submissions or npm
 npm run public-beta-candidate
 ```
 
-This gate includes syntax checks, tests, MCP stdio smoke validation, strict package validation, moderate-or-higher dependency audit, public-tree validation, `npm pack --dry-run` and installed-tarball smoke validation.
+This gate includes ESLint, syntax checks, tests, MCP stdio smoke validation, strict package validation, moderate-or-higher dependency audit, public-tree validation, `npm pack --dry-run` and installed-tarball smoke validation.
 
-Then complete `docs/release-checklist.md`, refresh host evidence listed in `docs/verification/v0.7.2/README.md`, wait for GitHub Actions, run external static audit from the public GitHub URL, and proceed only after explicit human approval.
+Then complete `docs/release-checklist.md`, refresh host evidence listed in `docs/verification/v0.7.3/README.md`, wait for GitHub Actions, run external static audit from the public GitHub URL, and proceed only after explicit human approval.
 
 ## License
 

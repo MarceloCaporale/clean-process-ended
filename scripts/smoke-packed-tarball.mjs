@@ -101,7 +101,7 @@ try {
     "examples/README.md",
     "docs/validation/VALIDATION.md",
     "docs/validation/evidence/README.md",
-    "docs/verification/v0.7.2/release-gate-summary.md",
+  "docs/verification/v0.7.3/release-gate-summary.md",
     "scripts/smoke-packed-tarball.mjs",
   ];
   report.requiredFiles = requiredFiles.map((file) => ({ file, ok: exists(file, packageRoot) }));

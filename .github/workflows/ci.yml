@@ -28,10 +28,10 @@ jobs:
           - 22.x
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
@@ -39,5 +39,42 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run public beta candidate gates
-        run: npm run public-beta-candidate
+      - name: Lint
+        run: npm run lint
+
+      - name: Syntax check
+        run: npm run check:syntax
+
+      - name: Test
+        run: npm run test:ci
+
+      - name: Smoke stdio
+        run: npm run smoke:stdio
+
+      - name: Validate package metadata
+        run: npm run validate:package:strict
+
+      - name: Public tree check
+        run: npm run public-tree:check
+
+      - name: Audit runtime dependencies
+        run: npm run package:audit
+
+      - name: Pack dry-run
+        run: npm run package:pack:dry-run
+
+      - name: Smoke packed tarball
+        run: npm run package:smoke-tarball
+
+      - name: macOS failure diagnostics
+        if: failure() && runner.os == 'macOS'
+        shell: bash
+        run: |
+          set +e
+          node --version
+          npm --version
+          uname -a
+          sw_vers
+          ulimit -a
+          env | grep '^CPE_' | sed 's/=.*$/=<set>/'
+          ps -axo pid,ppid,etime,pcpu,rss,comm,args | head -40

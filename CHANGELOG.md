@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.7.3 - Validation Metrics And Public Framing
+
+- Reframed the public beta as runtime-validated process hygiene, evidence and dry-run planning instead of "diagnostics only".
+- Added public validation metrics language so agents and reviewers can distinguish real runtime validation metrics from adoption metrics.
+- Documented Qwen Code CLI validation with Ollama-backed Qwen models without adding unverified host claims.
+- Hardened the Windows `CPE_POWERSHELL` override so it only accepts `powershell.exe` or `pwsh.exe` executables, without shell-like arguments.
+- Documented Windows scanner latency from the CPU-sample interval and kept it outside the cleanup safety decision.
+- Added regression tests for the PowerShell override resolver.
+- Hardened macOS/POSIX scanning by supporting BSD `ps etime` output in addition to Linux/procps `etimes`.
+- Added filesystem realpath identity checks so macOS `/var` and `/private/var` aliases do not break trusted project config detection.
+- Split GitHub Actions gates into explicit lint, syntax, test, smoke, validation, audit and package steps, with macOS diagnostics on failure.
+
 ## 0.7.2 - Public Beta Ownership Hardening
 
 - Split host path evidence into executable path versus cwd/working-directory context.

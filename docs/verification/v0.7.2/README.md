@@ -97,5 +97,5 @@ For Gemini CLI, optionally repeat the validation to capture the same raw JSON bu
 - Confirm GitHub Actions pass on the public repository before creating a tag or release.
 - Run external static audit from the public GitHub URL before release/tag/npm publication.
 - Confirm localized READMEs remain equivalent in content.
-- Confirm `npm run public-beta-candidate` includes and passes the installed-tarball smoke test.
+- Confirm `npm run public-beta-candidate` includes and passes ESLint and the installed-tarball smoke test.
 - Do not run npm publication until GitHub CI, external audit and release notes are accepted.

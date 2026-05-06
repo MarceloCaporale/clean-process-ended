@@ -27,7 +27,8 @@ Recommended order:
 1. Codex Desktop;
 2. Claude Code;
 3. Gemini CLI;
-4. any additional host only after a concrete validation target is approved.
+4. Qwen Code CLI with an Ollama-backed Qwen model workflow;
+5. any additional host only after a concrete validation target is approved.
 
 For each host, record the expected profile, watcher state, `storeCommandLines`, ownership counts, cleanup dry-run result and selected `process_explain` outputs.
 

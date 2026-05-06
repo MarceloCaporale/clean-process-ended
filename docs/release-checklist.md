@@ -8,7 +8,7 @@ Use this checklist before any GitHub or npm publication. It is intentionally str
 - `server.json` name matches `package.json.mcpName`.
 - `server.json` package identifier and version match `package.json`.
 - `LICENSE` is Apache-2.0 and `NOTICE` is present.
-- `README.md`, `README_ES.md`, `README_DE.md`, `README_PT_BR.md`, `README_ZH.md`, `README_JA.md`, `CHANGELOG.md`, `RELEASE_NOTES_v0.7.2.md`, `SECURITY.md` and `SUPPORT.md` are reviewed.
+- `README.md`, `README_ES.md`, `README_DE.md`, `README_PT_BR.md`, `README_ZH.md`, `README_JA.md`, `CHANGELOG.md`, `RELEASE_NOTES_v0.7.3.md`, `SECURITY.md` and `SUPPORT.md` are reviewed.
 - The localized READMEs are equivalent in content; language changes, claims do not.
 - `AGENTS.md`, `docs/quickstart.md`, `docs/design-decisions.md`, `schemas/`, `examples/` and `docs/validation/` are reviewed.
 
@@ -17,7 +17,7 @@ Use this checklist before any GitHub or npm publication. It is intentionally str
 - README states beta status.
 - README states dry-run default.
 - README states automatic cleanup is disabled by default.
-- README states v0.7.2 public CLI/MCP real cleanup is non-operable.
+- README states v0.7.3 public CLI/MCP real cleanup is non-operable.
 - `related_unowned` and `unknown_owner` remain report-only by default.
 - Agent protocol says not to call `dry_run=false` autonomously.
 - No documentation implies that installation alone makes agents use the MCP automatically.
@@ -41,6 +41,7 @@ npm run public-beta-candidate
 
 Expected sub-gates:
 
+- ESLint;
 - syntax check;
 - test suite;
 - MCP stdio smoke test;
@@ -58,6 +59,7 @@ Before upgrading support claims:
 - Codex: refresh native validation after installing the exact publish candidate.
 - Claude Code: revalidate native MCP tools with `CPE_HOST_PROFILE=claude_code`.
 - Gemini CLI: revalidate native MCP tools with `CPE_HOST_PROFILE=gemini_cli`.
+- Qwen Code CLI: revalidate native diagnostic MCP tools with `CPE_HOST_PROFILE=qwen_code` and an Ollama-backed Qwen model workflow; capture full dry-run close-check evidence before claiming parity with Codex, Claude or Gemini.
 - Additional hosts: add to README, support matrix, validation evidence, examples, snippets, package keywords and discoverability only after native MCP tool validation and sanitized evidence are captured.
 
 Each host evidence bundle should include:

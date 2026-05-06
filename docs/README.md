@@ -5,7 +5,7 @@ Public documentation included with the package.
 ## Index
 
 - `quickstart.md`: fastest safe setup and dry-run close-check flow.
-- `ARCHITECTURE.md`: v0.7.2 architecture.
+- `ARCHITECTURE.md`: v0.7.3 architecture.
 - `design-decisions.md`: product and architecture decisions that should stay stable.
 - `SAFETY_MODEL.md`: cleanup and auto-cleanup safety model.
 - `MANAGED_LIFECYCLE.md`: `cpe-run` managed lifecycle.
@@ -26,8 +26,8 @@ Public documentation included with the package.
 - `validation/client-behavior.md`: host-specific MCP loading notes.
 - `validation/evidence/`: sanitized public host evidence summaries.
 - `verification/README.md`: verification evidence hygiene.
-- `verification/v0.7.2/README.md`: v0.7.2 publication validation notes.
-- `verification/v0.7.2/release-gate-summary.md`: local gate summary and maintainer authorization gates.
+- `verification/v0.7.3/README.md`: v0.7.3 publication validation notes.
+- `verification/v0.7.3/release-gate-summary.md`: local gate summary and maintainer authorization gates.
 - `fixtures/codex-agent-mem/`: public snake_case receipt schema and examples for `codex-agent-mem`.
 
 ## Public contracts and examples

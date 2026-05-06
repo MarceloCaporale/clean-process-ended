@@ -2,8 +2,8 @@
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
   "name": "io.github.marcelocaporale/clean-process-ended",
   "title": "clean-process-ended",
-  "description": "Ownership-first local MCP process janitor for AI coding agents: dry-run close checks, managed process evidence and conservative cleanup planning.",
-  "version": "0.7.2",
+  "description": "Ownership-first local MCP process janitor for AI coding agents: runtime validation metrics, dry-run close checks, managed process evidence and conservative cleanup planning.",
+  "version": "0.7.3",
   "repository": {
     "url": "https://github.com/MarceloCaporale/clean-process-ended",
     "source": "github"
@@ -12,7 +12,7 @@
     {
       "registryType": "npm",
       "identifier": "clean-process-ended",
-      "version": "0.7.2",
+      "version": "0.7.3",
       "transport": {
         "type": "stdio"
       }

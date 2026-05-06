@@ -2,9 +2,11 @@
 
 其他语言：[English](./README.md) | [Español](./README_ES.md) | [Deutsch](./README_DE.md) | [Português do Brasil](./README_PT_BR.md) | [日本語](./README_JA.md)
 
-**面向 AI coding agent 的 ownership-first 本地 MCP process janitor；适用于 Codex、Claude Code、Gemini CLI 与 MCP-compatible host 工作流，尤其是子进程可能比实际任务更长寿的场景。**
+**面向 AI coding agent 的 ownership-first 本地 MCP process janitor；适用于 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI，以及 MCP-compatible host 工作流，尤其是子进程可能比实际任务更长寿的场景。**
 
-`clean-process-ended` 检查与 agent 和 MCP session 相关的本地子进程，把 session ownership 与弱相似度信号分开，并在考虑任何环境操作之前生成保守的 dry-run cleanup plan。
+`clean-process-ended` 检查与 agent 和 MCP session 相关的本地子进程，把 session ownership 与弱相似度信号分开，并在考虑任何环境操作之前生成可审查、由 reproducible evidence 支撑的 dry-run cleanup plan。
+
+`clean-process-ended` 作为本地 stdio MCP server 运行，并已在 Codex Desktop、Claude Code、Gemini CLI，以及使用 Ollama-backed Qwen models 的 Qwen Code CLI 中验证。其他 MCP-compatible hosts 可以通过 generic MCP profile 测试。
 
 它面向本地 MCP 和 coding-agent 工作流，在这些工作流中，子进程、browser helper、devtools、本地服务器或 MCP server 可能在 host session 或任务结束后继续运行。本项目按 ownership evidence 分类进程，而不是按进程名相似度分类，然后报告哪些是可操作的、被阻止的、相关的或未知的。
 
@@ -12,7 +14,7 @@
 
 ## 你得到的能力
 
-- **Agent process visibility**：查看与 Codex、Claude Code、Gemini CLI、generic MCP host 以及未来已验证 runtime 相关的本地子进程，而不是按进程名清理。
+- **Agent process visibility**：查看与 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI、generic MCP host 以及未来已验证 runtime 相关的本地子进程，而不是按进程名清理。
 - **Ownership-first safety**：在规划任何破坏性操作之前，先分类 `owned_current_session`、`related_unowned` 和 `unknown_owner`。
 - **Dry-run close checks**：通过 `janitor_discovery`、`session_close_check`、report、candidate 和 audit bundle 给 agent 一个明确的任务结束协议。
 - **Reproducible evidence**：生成 sanitized receipt、SHA-256 evidence、audit bundle 和 support-matrix notes 供审查。
@@ -29,27 +31,40 @@
 
 ## 状态
 
-- 版本：`0.7.2` beta。
+- 版本：`0.7.3` beta。
 - Runtime：Node.js `>=18.17`。
 - 传输：MCP stdio。
 - 默认 cleanup：dry-run。
 - 默认自动 cleanup：禁用。
 - 持久 watcher：默认不安装。
 
-不要把 beta 结果当作人工审查的替代品。v0.7.2 的公开 CLI/MCP surface 以诊断和 dry-run 为主；它不会通过公开 CLI/MCP surface 执行真实终止。
+不要把 beta 结果当作人工审查的替代品。v0.7.3 的公开 CLI/MCP surface 提供经过 runtime validation 的 process hygiene、evidence 和 dry-run planning；它不会通过公开 CLI/MCP surface 执行真实终止。
 
 ## Validation Snapshot
 
-当前 v0.7.2 public-beta validation evidence 被有意表述为 dry-run validation，而不是真实 cleanup validation：
+当前 v0.7.3 public-beta evidence 区分 runtime validation metrics 与 adoption metrics。它证明 discovery、reports、evidence 和 dry-run planning；不声称真实 cleanup validation：
 
 | Area | Current evidence |
 | --- | --- |
 | MCP tool surface | Server 暴露 close-check、report、explain、policy、audit 和 managed-lifecycle tools。 |
 | Codex | 重启后的本地 native validation；仅 dry-run。 |
-| Claude Code | v0.7.2 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
-| Gemini CLI | v0.7.2 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
+| Claude Code | 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
+| Gemini CLI | 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
+| Qwen Code CLI | 使用 Ollama-backed Qwen models 的本地 native MCP validation 已完成；非破坏性 MCP tool workflow；提供已清理的 evidence summary。 |
 | Public cleanup real | public validation 中真实 cleanup 执行为 `0`。 |
 | Evidence privacy | Public receipts 设计为排除完整 command lines、raw process output、env vars、tokens 和 secrets。 |
+
+## 公开验证指标
+
+这些是 public beta line 和 release gate 的真实 validation metrics，不是 stars、forks、downloads 或第三方生产使用这类 adoption metrics：
+
+- 已验证 MCP host workflows：`4`（`codex`、`claude_code`、`gemini_cli`、`qwen_code`），包括三个 dry-run close-check workflows 和一个 Qwen Code CLI native non-destructive tool workflow。
+- MCP stdio smoke surface：发布的 server 暴露 close-check、report、explain、policy、audit 和 managed-lifecycle tool catalog。
+- 本地 release gate：ESLint、syntax checks、Node tests、MCP stdio smoke、strict package validation、public-tree check、dependency audit、`npm pack --dry-run` 和 installed-tarball smoke。
+- GitHub Actions matrix：配置为 Windows、macOS、Linux，覆盖 Node 18、20、22。
+- 公开真实 cleanup 执行次数：`0`。
+- 生产 dependency audit 目标：`0` moderate-or-higher vulnerabilities。
+- Evidence privacy 目标：public receipts 中没有完整 command lines、raw process output、env vars、tokens、secrets 或 live confirm tokens。
 
 ## 安装
 
@@ -83,19 +98,21 @@ env = { CPE_HOST_PROFILE = "codex" }
 - `codex`
 - `claude_code`
 - `gemini_cli`
+- `qwen_code`
 - `generic_mcp_host`
 
 更多 samples 在 `samples/`，可复制改造的 examples 在 `examples/`。
 
 ## 支持矩阵
 
-该矩阵描述 v0.7.2 的公开 profile 意图和验证状态。它不声称 cleanup 安全性超出已记录的 policy gates。请查看 `docs/support-matrix.md` 和 `docs/validation/` 获取 evidence levels 与发布状态。
+该矩阵描述 v0.7.3 的公开 profile 意图和验证状态。它不声称 cleanup 安全性超出已记录的 policy gates。请查看 `docs/support-matrix.md` 和 `docs/validation/` 获取 evidence levels 与发布状态。
 
 | Host | Profile | 公开状态 |
 | --- | --- | --- |
 | Codex | `codex` | 当前本地验证已在重启后完成；仅 dry-run。 |
 | Claude Code | `claude_code` | 当前本地 native validation 已完成；仅 dry-run。 |
 | Gemini CLI | `gemini_cli` | 当前本地 native validation 已完成；仅 dry-run。 |
+| Qwen Code CLI | `qwen_code` | 使用 Ollama-backed Qwen models 的当前本地 native validation 已完成；非破坏性 MCP tool workflow。 |
 | Generic MCP Host | `generic_mcp_host` | 仅 diagnostic profile；host-specific ownership claims 需要单独 evidence。 |
 
 ## CLI
@@ -122,7 +139,7 @@ cpe-scan managed-lifecycle --json
 cpe-scan managed-cleanup-dryrun --json
 ```
 
-`managed-cleanup-dryrun` 在 v0.7.2 中仅用于报告。
+`managed-cleanup-dryrun` 在 v0.7.3 中仅用于报告。
 
 ## Agent Close Protocol
 
@@ -137,7 +154,7 @@ cpe-scan managed-cleanup-dryrun --json
 
 ## 与 codex-agent-mem 的可选集成
 
-`codex-agent-mem` v1.0.1 与 `clean-process-ended` v0.7.2 可以分别独立使用，但它们被设计为互补。`codex-agent-mem` 保存 task continuity 和 closure state；`clean-process-ended` 记录 process-hygiene evidence 与 dry-run janitor receipts。两者一起使用时，推荐的关闭流程是：
+`codex-agent-mem` v1.0.1 与 `clean-process-ended` v0.7.3 可以分别独立使用，但它们被设计为互补。`codex-agent-mem` 保存 task continuity 和 closure state；`clean-process-ended` 记录 process-hygiene evidence 与 dry-run janitor receipts。两者一起使用时，推荐的关闭流程是：
 
 1. 使用 `codex-agent-mem` 恢复并关闭 continuity；
 2. 将 `clean-process-ended` 作为 dry-run close check 运行；
@@ -158,7 +175,7 @@ cpe-scan managed-cleanup-dryrun --json
 
 ## Cleanup 安全
 
-默认情况下，cleanup 是 dry-run，并且 scope 为 `owned_current_session`。在 v0.7.2 中，公开 CLI/MCP surface 以诊断和 dry-run 为主：real termination 仍不能通过公开 CLI/MCP 操作，因为 evidence inputs 被有意不暴露。内部 real-cleanup gate 比公开 surface 更严格，在任何 termination path 之前都要求以下全部条件：
+默认情况下，cleanup 是 dry-run，并且 scope 为 `owned_current_session`。在 v0.7.3 中，公开 CLI/MCP surface 提供经过 runtime validation 的 process hygiene、evidence 和 dry-run planning：real termination 仍不能通过公开 CLI/MCP 操作，因为 evidence inputs 被有意不暴露。内部 real-cleanup gate 比公开 surface 更严格，在任何 termination path 之前都要求以下全部条件：
 
 - 当前 safety policy 中存在合格的 `managed_strong` 或 `managed_strong_expired` candidate；
 - 可信安装配置中设置 `cleanup.realExecutionEnabled=true`；
@@ -195,7 +212,7 @@ cpe-scan managed-cleanup-dryrun --json
 - `SECURITY.md`：安全报告和支持政策。
 - `SUPPORT.md`：公开 support matrix。
 - `CHANGELOG.md`：release notes。
-- `RELEASE_NOTES_v0.7.2.md`：v0.7.2 release notes。
+- `RELEASE_NOTES_v0.7.3.md`：v0.7.3 release notes。
 
 ## Release checks
 
@@ -205,9 +222,9 @@ cpe-scan managed-cleanup-dryrun --json
 npm run public-beta-candidate
 ```
 
-此 gate 包括 syntax checks、tests、MCP stdio smoke validation、strict package validation、moderate-or-higher dependency audit、public-tree validation、`npm pack --dry-run` 以及 installed-tarball smoke validation。
+此 gate 包括 ESLint、syntax checks、tests、MCP stdio smoke validation、strict package validation、moderate-or-higher dependency audit、public-tree validation、`npm pack --dry-run` 以及 installed-tarball smoke validation。
 
-然后完成 `docs/release-checklist.md`，刷新 `docs/verification/v0.7.2/README.md` 中列出的 host evidence，等待 GitHub Actions，从公开 GitHub URL 执行外部静态审计，并且只在明确人工批准后继续。
+然后完成 `docs/release-checklist.md`，刷新 `docs/verification/v0.7.3/README.md` 中列出的 host evidence，等待 GitHub Actions，从公开 GitHub URL 执行外部静态审计，并且只在明确人工批准后继续。
 
 ## 许可证
 

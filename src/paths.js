@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 
@@ -51,4 +52,40 @@ export function getDefaultConfigPaths({ includeProjectConfig = false } = {}) {
 
 export function normalizeForMatching(value) {
   return String(value || "").replace(/\\/g, "/").toLowerCase();
+}
+
+export function canonicalizeFilesystemPath(value) {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  const resolved = path.resolve(raw);
+  return realpathOrParent(resolved);
+}
+
+export function isSameFilesystemPath(left, right) {
+  if (!left || !right) return false;
+  return comparableFilesystemPath(canonicalizeFilesystemPath(left)) === comparableFilesystemPath(canonicalizeFilesystemPath(right));
+}
+
+function realpathOrParent(resolved) {
+  const direct = tryRealpath(resolved);
+  if (direct) return direct;
+
+  const parent = path.dirname(resolved);
+  const parentRealpath = tryRealpath(parent);
+  if (parentRealpath) return path.join(parentRealpath, path.basename(resolved));
+
+  return resolved;
+}
+
+function tryRealpath(candidate) {
+  try {
+    return fs.realpathSync.native(candidate);
+  } catch {
+    return null;
+  }
+}
+
+function comparableFilesystemPath(value) {
+  const resolved = path.resolve(String(value || ""));
+  return process.platform === "win32" ? resolved.toLowerCase() : resolved;
 }

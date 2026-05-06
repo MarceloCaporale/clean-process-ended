@@ -32,9 +32,9 @@ Shells, wrappers, `node`, `python`, `npx`, `uvx` and broad command-line keywords
 
 Browser/devtools/playwright-like processes are never default cleanup targets. They require explicit policy handling and should remain outside autonomous cleanup.
 
-## Public v0.7.2 is dry-run oriented
+## Public v0.7.3 is dry-run-first
 
-Public CLI/MCP v0.7.2 can inspect, explain, partition, generate dry-run plans and write sanitized evidence. Real cleanup evidence inputs are intentionally not exposed in the public surface.
+Public CLI/MCP v0.7.3 can inspect, explain, partition, generate dry-run plans and write sanitized evidence. Real cleanup evidence inputs are intentionally not exposed in the public surface.
 
 ## Auto-cleanup is experimental and off by default
 

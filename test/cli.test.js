@@ -51,6 +51,42 @@ function buildHostNamePattern(codepointsList) {
   return new RegExp(`\\b(${names.map((name) => name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})\\b`, "i");
 }
 
+function isExternalReference(target) {
+  return /^(?:[a-z][a-z0-9+.-]*:|#|\/|~|\$|%)/i.test(target);
+}
+
+function normalizeMarkdownReference(target) {
+  const clean = target.trim().replace(/^<|>$/g, "").split(/[?#]/, 1)[0];
+  if (!clean || isExternalReference(clean) || clean.includes("*")) return null;
+  return clean.replace(/\\/g, "/");
+}
+
+function resolveMarkdownReference(sourceFile, target, kind) {
+  const normalized = normalizeMarkdownReference(target);
+  if (!normalized || normalized.includes(" ")) return null;
+  const rootish = /^(?:\.github|bin|docs|examples|samples|schemas|scripts|src|test)\//.test(normalized)
+    || /^(?:\.clean-process-ended|AGENTS|CHANGELOG|CONTRIBUTING|LICENSE|NOTICE|README|RELEASE_NOTES|SECURITY|SUPPORT|package|server|eslint)/.test(normalized);
+  if (kind === "code_path" && !rootish && !normalized.startsWith("./") && !normalized.startsWith("../")) {
+    return null;
+  }
+  const base = rootish ? ROOT : path.dirname(path.join(ROOT, sourceFile));
+  return path.resolve(base, normalized);
+}
+
+function collectMarkdownReferences(file, content) {
+  const references = [];
+  const markdownLinkPattern = /!?\[[^\]]*]\(([^)\s]+(?:\s+"[^"]*")?)\)/g;
+  const codePathPattern = /`([^`\n]+?\.(?:md|json|toml|js|mjs|cjs|yml|yaml|txt|cmd|ps1|sh))`/g;
+
+  for (const match of content.matchAll(markdownLinkPattern)) {
+    references.push({ file, target: match[1].replace(/\s+".*"$/, ""), kind: "markdown_link" });
+  }
+  for (const match of content.matchAll(codePathPattern)) {
+    references.push({ file, target: match[1], kind: "code_path" });
+  }
+  return references;
+}
+
 test("cpe-run does not write launcher JSON to stdout when wrapping stdio roles", () => {
   const home = fs.mkdtempSync(path.join(os.tmpdir(), "cpe-cli-"));
   const result = spawnSync(
@@ -116,6 +152,8 @@ test("install-snippet returns npx snippets for core clients", () => {
     claude_code: /^claude mcp add/,
     gemini: /^gemini mcp add/,
     gemini_cli: /^gemini mcp add/,
+    qwen: /^qwen mcp add/,
+    qwen_code: /^qwen mcp add/,
   };
   for (const [client, expectedCommand] of Object.entries(expectedCommands)) {
     const result = spawnSync(process.execPath, [path.join(ROOT, "bin", "cpe-scan.js"), "install-snippet", "--client", client, "--json"], {
@@ -175,6 +213,7 @@ test("public docs do not contain personal LAB paths", () => {
     "README_JA.md",
     "CHANGELOG.md",
     "RELEASE_NOTES_v0.7.2.md",
+    "RELEASE_NOTES_v0.7.3.md",
     "SECURITY.md",
     "SUPPORT.md",
     "server.json",
@@ -192,6 +231,8 @@ test("public docs do not contain personal LAB paths", () => {
     "docs/support-matrix.md",
     "docs/verification/README.md",
     "docs/verification/v0.7.2/README.md",
+    "docs/verification/v0.7.3/README.md",
+    "docs/verification/v0.7.3/release-gate-summary.md",
     "docs/ARCHITECTURE.md",
     "docs/WHEN_TO_USE.md",
     "docs/AGENT_PROTOCOL.md",
@@ -209,6 +250,7 @@ test("public docs do not contain personal LAB paths", () => {
     "docs/validation/evidence/codex-v0.7.2.md",
     "docs/validation/evidence/claude-code-v0.7.2.md",
     "docs/validation/evidence/gemini-cli-v0.7.2.md",
+    "docs/validation/evidence/qwen-cli-v0.7.3.md",
     "schemas/process_janitor_receipt.schema.json",
     "schemas/audit_bundle.schema.json",
     "examples/README.md",
@@ -221,10 +263,25 @@ test("public docs do not contain personal LAB paths", () => {
   }
 });
 
+test("public markdown local references resolve inside the package surface", () => {
+  const markdownFiles = collectPackageFiles().filter((file) => file.endsWith(".md"));
+  const failures = [];
+
+  for (const file of markdownFiles) {
+    const content = fs.readFileSync(path.join(ROOT, file), "utf8");
+    for (const reference of collectMarkdownReferences(file, content)) {
+      const resolved = resolveMarkdownReference(file, reference.target, reference.kind);
+      if (resolved && !fs.existsSync(resolved)) {
+        failures.push(`${reference.file}: ${reference.kind} ${reference.target}`);
+      }
+    }
+  }
+
+  assert.deepEqual(failures, []);
+});
+
 test("packaged public surface does not mention unvalidated host names", () => {
   const unvalidatedHostPattern = buildHostNamePattern([
-    [113, 119, 101, 110],
-    [113, 119, 101, 110, 95, 99, 111, 100, 101],
     [100, 101, 101, 112, 115, 101, 101, 107],
   ]);
   for (const file of collectPackageFiles()) {
@@ -243,12 +300,13 @@ test("localized READMEs carry equivalent public safety and release surface", () 
     "README_JA.md",
   ];
   const requiredSignals = [
-    /v0\.7\.2/,
+    /v0\.7\.3/,
     /clean-process-ended/,
     /CPE_HOST_PROFILE/,
     /codex/,
     /claude_code/,
     /gemini_cli/,
+    /qwen_code/,
     /session-close-check|session_close_check/,
     /janitor-discovery|janitor_discovery/,
     /codex-agent-mem/,
@@ -267,7 +325,7 @@ test("localized READMEs carry equivalent public safety and release surface", () 
   for (const file of readmes) {
     const content = fs.readFileSync(path.join(ROOT, file), "utf8");
     const headingCount = content.split("\n").filter((line) => line.startsWith("## ")).length;
-    assert.equal(headingCount, 15, file);
+    assert.equal(headingCount, 16, file);
     for (const signal of requiredSignals) {
       assert.match(content, signal, `${file} missing ${signal}`);
     }
@@ -298,6 +356,7 @@ test("package public files exclude internal and legacy docs", () => {
     "README_PT_BR.md",
     "README_ZH.md",
     "RELEASE_NOTES_v0.7.2.md",
+    "RELEASE_NOTES_v0.7.3.md",
     "SECURITY.md",
     "SUPPORT.md",
     "docs/quickstart.md",
@@ -310,6 +369,7 @@ test("package public files exclude internal and legacy docs", () => {
     "docs/public-positioning.md",
     "docs/verification/README.md",
     "docs/verification/v0.7.2/README.md",
+    "docs/verification/v0.7.3/README.md",
     "docs/WHEN_TO_USE.md",
     "docs/AGENT_PROTOCOL.md",
     "docs/INTEGRATION_CODEX_AGENT_MEM.md",
@@ -318,6 +378,7 @@ test("package public files exclude internal and legacy docs", () => {
     "docs/validation/client-behavior.md",
     "docs/validation/evidence/codex-v0.7.2.md",
     "docs/verification/v0.7.2/release-gate-summary.md",
+    "docs/verification/v0.7.3/release-gate-summary.md",
     "schemas",
     "examples",
     "scripts/smoke-packed-tarball.mjs",

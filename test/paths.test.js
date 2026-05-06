@@ -5,12 +5,23 @@ import path from "node:path";
 import { getDefaultConfigPaths, getDefaultDataDir, getInstallHome, getProjectConfigPath } from "../src/paths.js";
 
 test("default install home is the canonical user directory", () => {
-  const expectedHome = path.join(os.homedir(), ".clean-process-ended");
-  assert.equal(getInstallHome(), expectedHome);
-  assert.equal(getDefaultDataDir(), path.join(expectedHome, "data"));
-  assert.ok(getDefaultConfigPaths().includes(path.join(expectedHome, "config.json")));
-  assert.ok(!getDefaultConfigPaths().includes(getProjectConfigPath()));
-  assert.ok(getDefaultConfigPaths({ includeProjectConfig: true }).includes(getProjectConfigPath()));
+  const previous = process.env.CLEAN_PROCESS_ENDED_HOME;
+
+  try {
+    delete process.env.CLEAN_PROCESS_ENDED_HOME;
+    const expectedHome = path.join(os.homedir(), ".clean-process-ended");
+    assert.equal(getInstallHome(), expectedHome);
+    assert.equal(getDefaultDataDir(), path.join(expectedHome, "data"));
+    assert.ok(getDefaultConfigPaths().includes(path.join(expectedHome, "config.json")));
+    assert.ok(!getDefaultConfigPaths().includes(getProjectConfigPath()));
+    assert.ok(getDefaultConfigPaths({ includeProjectConfig: true }).includes(getProjectConfigPath()));
+  } finally {
+    if (previous === undefined) {
+      delete process.env.CLEAN_PROCESS_ENDED_HOME;
+    } else {
+      process.env.CLEAN_PROCESS_ENDED_HOME = previous;
+    }
+  }
 });
 
 test("CLEAN_PROCESS_ENDED_HOME overrides the install home", () => {

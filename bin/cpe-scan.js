@@ -35,8 +35,6 @@ import {
 const args = process.argv.slice(2);
 const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const DISALLOWED_PUBLIC_HOST_PATTERN = buildHostNamePattern([
-  [113, 119, 101, 110],
-  [113, 119, 101, 110, 95, 99, 111, 100, 101],
   [100, 101, 101, 112, 115, 101, 101, 107],
 ]);
 const KNOWN_COMMANDS = new Set([
@@ -585,39 +583,6 @@ function findExistingPrivatePublicTreeArtifacts() {
   return results.sort();
 }
 
-function hasHistoricalDocumentBanner(relativePath) {
-  const fullPath = path.join(PACKAGE_ROOT, relativePath);
-  if (!fs.existsSync(fullPath)) return true;
-  const text = fs.readFileSync(fullPath, "utf8").slice(0, 500);
-  return text.includes("# Historical Document") && text.includes("does not describe the current public behavior");
-}
-
-function isGitIgnored(relativePath, gitignoreText) {
-  const result = spawnSync("git", ["check-ignore", "--quiet", relativePath], {
-    cwd: PACKAGE_ROOT,
-    windowsHide: true,
-  });
-  if (!result.error && result.status === 0) return true;
-  return matchesLocalGitignore(relativePath, gitignoreText);
-}
-
-function matchesLocalGitignore(relativePath, gitignoreText) {
-  const normalized = String(relativePath || "").replaceAll("\\", "/").replace(/\/$/, "");
-  if (/^PROJECTS_STATE_/.test(normalized)) return /PROJECTS_STATE_\*\.md/.test(gitignoreText);
-  if (/^index_project_/.test(normalized)) return /index_project_\*\.md/.test(gitignoreText);
-  if (/\.lnk$/i.test(normalized)) return /\*\.lnk/.test(gitignoreText);
-  if (/^_AUDITORIA_DOCS(?:\/|$)/.test(normalized)) return /_AUDITORIA_DOCS\//.test(gitignoreText);
-  if (/^_BASELINE(?:\/|$)/.test(normalized)) return /_BASELINE\//.test(gitignoreText);
-  if (/^_INFO_DOCS(?:\/|$)/.test(normalized)) return /_INFO_DOCS\//.test(gitignoreText);
-  if (/^90_ARCHIVO(?:\/|$)/.test(normalized)) return /90_ARCHIVO\//.test(gitignoreText);
-  if (/^evidence(?:\/|$)/.test(normalized)) return /evidence\//.test(gitignoreText);
-  if (/^audit-bundles(?:\/|$)/.test(normalized)) return /audit-bundles\//.test(gitignoreText);
-  if (/^clean-process-ended-mcp__v.*\.zip$/i.test(normalized)) return /clean-process-ended-mcp__v\*\.zip/.test(gitignoreText);
-  if (/^clean-process-ended-mcp__v.*\.zip\.sha256\.txt$/i.test(normalized)) return /clean-process-ended-mcp__v\*\.zip\.sha256\.txt/.test(gitignoreText);
-  if (/^clean-process-ended-mcp__v/.test(normalized)) return /clean-process-ended-mcp__v\*\//.test(gitignoreText);
-  return false;
-}
-
 function packageInfo() {
   const pkg = JSON.parse(fs.readFileSync(path.join(PACKAGE_ROOT, "package.json"), "utf8"));
   return {
@@ -753,6 +718,8 @@ function installSnippet(client) {
     claude_code: "claude",
     gemini: "gemini",
     gemini_cli: "gemini",
+    qwen: "qwen",
+    qwen_code: "qwen",
   };
   const profiles = {
     codex: "codex",
@@ -760,6 +727,8 @@ function installSnippet(client) {
     claude_code: "claude_code",
     gemini: "gemini_cli",
     gemini_cli: "gemini_cli",
+    qwen: "qwen_code",
+    qwen_code: "qwen_code",
   };
   const clientKey = aliases[client] || client;
   const profile = profiles[client] || client;
@@ -768,6 +737,7 @@ function installSnippet(client) {
     codex: `codex mcp add clean-process-ended --env CPE_HOST_PROFILE=${profile} -- ${npxCommand}`,
     claude: `claude mcp add --transport stdio --scope user --env CPE_HOST_PROFILE=${profile} clean-process-ended -- ${npxCommand}`,
     gemini: `gemini mcp add -s user -e CPE_HOST_PROFILE=${profile} clean-process-ended ${npxCommand}`,
+    qwen: `qwen mcp add -s user -e CPE_HOST_PROFILE=${profile} clean-process-ended npx -y --package clean-process-ended clean-process-ended-mcp`,
   };
   return {
     client,
@@ -847,7 +817,7 @@ function jsonRpcSmoke(child) {
     const init = await send("initialize", {
       protocolVersion: "2024-11-05",
       capabilities: {},
-      clientInfo: { name: "cpe-smoke-stdio", version: "0.7.2" },
+      clientInfo: { name: "cpe-smoke-stdio", version: "0.7.3" },
     });
     child.stdin.write(`${JSON.stringify({ jsonrpc: "2.0", method: "notifications/initialized", params: {} })}\n`);
     const tools = await send("tools/list", {});
@@ -873,5 +843,5 @@ function jsonRpcSmoke(child) {
 }
 
 function printHelp() {
-  process.stdout.write(`cpe-scan - local CLI for clean-process-ended v0.7.2\n\nCommands:\n  report, candidates, cleanup, explain, profiles, config, session, ledger\n  reconcile, watch\n  audit-bundle --output-dir <dir>\n  policy-explain --pid <pid>\n  stale-sessions\n  resource-impact\n  auto-cleanup [--status]\n  managed-processes [--running-only]\n  managed-explain --managed-process-id <id>\n  managed-reconcile\n  managed-lifecycle\n  managed-cleanup-dryrun\n  managed-stale\n  doctor\n  validate-package --strict-public\n  public-tree-check\n  install-snippet --client codex|claude|claude_code|gemini|gemini_cli\n  agent-protocol --client codex|claude|gemini\n  janitor-discovery --client codex|claude|gemini\n  session-close-check\n  smoke-stdio\n\nCommon options:\n  --json\n  --scope owned_current_session|related_unowned|unknown_owner|all|explicit_pids\n       Scope note: related_unowned, unknown_owner and all are report/candidates scopes.\n       Cleanup remains dry-run first and report-only ownership scopes are blocked.\n  --pid <pid>                 Repeatable.\n  --pids <pid,pid>\n  --min-age <minutes>\n  --include-command-line\n  --config <path>\n  --data-dir <path>\n  --project-key <key>\n\nCleanup options:\n  --no-dry-run                Requests real termination, still blocked unless install config explicitly enables cleanup.realExecutionEnabled with the required acknowledgement.\n  --confirm-token <token>     Always required for real cleanup.\n  --request-confirm-token     Explicitly request a live token during dry-run; agents should not use this autonomously.\n  --signal SIGTERM|SIGKILL|SIGINT\n  --force                     Escalate to SIGKILL after grace period.\n\nExamples:\n  cpe-scan report --json\n  cpe-scan audit-bundle --output-dir ./evidence/cpe --json\n  cpe-scan managed-lifecycle --json\n  cpe-scan managed-cleanup-dryrun --json\n  cpe-scan janitor-discovery --client codex --json\n  cpe-scan session-close-check --project-key my-project --json\n  cpe-scan smoke-stdio --json\n  cpe-run --host codex --role mcp-server -- node ./server.js\n`);
+  process.stdout.write(`cpe-scan - local CLI for clean-process-ended v0.7.3\n\nCommands:\n  report, candidates, cleanup, explain, profiles, config, session, ledger\n  reconcile, watch\n  audit-bundle --output-dir <dir>\n  policy-explain --pid <pid>\n  stale-sessions\n  resource-impact\n  auto-cleanup [--status]\n  managed-processes [--running-only]\n  managed-explain --managed-process-id <id>\n  managed-reconcile\n  managed-lifecycle\n  managed-cleanup-dryrun\n  managed-stale\n  doctor\n  validate-package --strict-public\n  public-tree-check\n  install-snippet --client codex|claude|claude_code|gemini|gemini_cli|qwen|qwen_code\n  agent-protocol --client codex|claude|gemini|qwen|qwen_code\n  janitor-discovery --client codex|claude|gemini|qwen|qwen_code\n  session-close-check\n  smoke-stdio\n\nCommon options:\n  --json\n  --scope owned_current_session|related_unowned|unknown_owner|all|explicit_pids\n       Scope note: related_unowned, unknown_owner and all are report/candidates scopes.\n       Cleanup remains dry-run first and report-only ownership scopes are blocked.\n  --pid <pid>                 Repeatable.\n  --pids <pid,pid>\n  --min-age <minutes>\n  --include-command-line\n  --config <path>\n  --data-dir <path>\n  --project-key <key>\n\nCleanup options:\n  --no-dry-run                Requests real termination, still blocked unless install config explicitly enables cleanup.realExecutionEnabled with the required acknowledgement.\n  --confirm-token <token>     Always required for real cleanup.\n  --request-confirm-token     Explicitly request a live token during dry-run; agents should not use this autonomously.\n  --signal SIGTERM|SIGKILL|SIGINT\n  --force                     Escalate to SIGKILL after grace period.\n\nExamples:\n  cpe-scan report --json\n  cpe-scan audit-bundle --output-dir ./evidence/cpe --json\n  cpe-scan managed-lifecycle --json\n  cpe-scan managed-cleanup-dryrun --json\n  cpe-scan janitor-discovery --client codex --json\n  cpe-scan session-close-check --project-key my-project --json\n  cpe-scan smoke-stdio --json\n  cpe-run --host codex --role mcp-server -- node ./server.js\n`);
 }

@@ -4,13 +4,13 @@
 
 ## Short Description
 
-Local MCP process janitor that helps AI agents and operators identify subprocesses tied to a work session before considering cleanup.
+Local MCP process janitor that helps AI agents and operators identify subprocesses tied to a work session, produce evidence and review dry-run cleanup plans before considering cleanup.
 
 ## Longer Description
 
 Agent sessions often leave local MCP servers, devtools, browser helpers, local servers or subprocesses running after the useful work has ended. `clean-process-ended` gives the host and the operator a conservative close-task check: what is owned by this session, what is merely related, what is unknown, and what is blocked by policy.
 
-The public beta emphasizes diagnosis, reproducible evidence and dry-run planning. It is intentionally not an automatic process killer.
+The public beta emphasizes runtime-validated process hygiene, reproducible evidence and dry-run planning. It is intentionally not an automatic process killer.
 
 It should be positioned as a practical developer-experience tool: less guesswork at the end of agent tasks, fewer stale local helpers, clearer evidence before cleanup decisions, and safer pairing with continuity tools such as `codex-agent-mem`.
 
@@ -25,18 +25,23 @@ It should be positioned as a practical developer-experience tool: less guesswork
 
 ## Compatibility Framing
 
-- Codex, Claude Code and Gemini CLI have current local dry-run validation evidence.
+- Codex Desktop, Claude Code and Gemini CLI have current local dry-run validation evidence.
+- Qwen Code CLI with Ollama-backed Qwen models has current local native non-destructive MCP tool validation evidence.
 - Additional hosts should be described only after a concrete profile, native MCP tool calls and an evidence bundle exist.
 - Generic MCP compatibility is a protocol and configuration claim, not a guarantee that every host will invoke the janitor automatically.
 
 ## Metrics Framing
 
-Use metrics that are tied to evidence:
+Use metrics that are tied to evidence. These are runtime validation metrics, not adoption metrics:
 
 - `0` public real-cleanup executions in validation.
-- dry-run-only host validation for current public beta evidence.
-- L3 local evidence for Codex, Claude Code and Gemini CLI.
+- dry-run-only host validation for the current Codex Desktop, Claude Code and Gemini CLI public beta evidence.
+- L3 local evidence for Codex Desktop, Claude Code and Gemini CLI.
+- L3 local non-destructive MCP tool evidence for Qwen Code CLI with Ollama-backed Qwen models.
+- MCP stdio smoke, package validation, installed-tarball smoke and dependency-audit gates in `npm run public-beta-candidate`.
 - sanitized receipts and audit bundles designed to omit command lines, raw process output, env vars, tokens and secrets.
+
+Do not use stars, forks, downloads or third-party production usage as evidence before the package has had time in public. Those are adoption metrics and should be reported separately from runtime validation.
 
 ## Recommended Website Copy
 
@@ -54,7 +59,7 @@ Avoid calling the project:
 
 ## Pairing With codex-agent-mem
 
-`codex-agent-mem` v1.0.1 preserves continuity. `clean-process-ended` v0.7.2 closes the local process hygiene loop. They work independently, but together they create a safer end-of-task protocol: recover context, finish work, produce a dry-run janitor receipt, and store only compact evidence in memory.
+`codex-agent-mem` v1.0.1 preserves continuity. `clean-process-ended` v0.7.3 closes the local process hygiene loop. They work independently, but together they create a safer end-of-task protocol: recover context, finish work, produce a dry-run janitor receipt, and store only compact evidence in memory.
 
 ## Author and Lab
 

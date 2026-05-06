@@ -24,6 +24,8 @@ const CLIENT_HOST_PROFILES = Object.freeze({
   claude_code: "claude_code",
   gemini: "gemini_cli",
   gemini_cli: "gemini_cli",
+  qwen: "qwen_code",
+  qwen_code: "qwen_code",
 });
 
 function suggestedHostProfileForClient(client) {
@@ -40,7 +42,7 @@ export function createRuntime({ configPath, dataDir, logger = () => {} } = {}) {
 
   return {
     product: "clean-process-ended",
-    version: "0.7.2",
+  version: "0.7.3",
     config: loaded.config,
     configLoadedPaths: loaded.loadedPaths,
     configMeta: loaded.configMeta,

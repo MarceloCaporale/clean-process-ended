@@ -6,7 +6,7 @@
 
 - No automatic cleanup is enabled by default.
 - Cleanup is dry-run by default.
-- The public v0.7.x CLI/MCP cleanup surface is dry-run oriented; real termination remains non-operable because evidence inputs are not exposed.
+- The public v0.7.x CLI/MCP cleanup surface provides runtime-validated process hygiene, evidence and dry-run planning; real termination remains non-operable because evidence inputs are not exposed.
 - Real cleanup always requires a fresh confirm token.
 - `related_unowned` and `unknown_owner` are report-only.
 - Project config is ignored unless explicitly trusted.
@@ -53,3 +53,9 @@ Experimental auto-cleanup can only be allowed from trusted install config and re
 ## Managed Cleanup
 
 Managed lifecycle cleanup planning requires strong scanner identity and exact host profile. Real termination is not exposed as a public v0.7.x CLI/MCP workflow; if a future version exposes it, it must still require the standard cleanup confirmation flow plus valid SHA-256 evidence.
+
+## Scanner Execution Notes
+
+The Windows scanner may invoke `powershell.exe` or `pwsh.exe` to read process metadata. The optional `CPE_POWERSHELL` override is constrained to those executable names and rejects arbitrary binaries or inline shell arguments.
+
+Windows resource-impact scans include a short CPU-sampling interval. This can add latency on process-heavy machines, but resource idleness is never treated as ownership proof or cleanup authorization.

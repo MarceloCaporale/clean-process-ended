@@ -7,6 +7,7 @@ Each host should pass a specific `CPE_HOST_PROFILE`.
 | Codex Desktop | `codex` | Current local validation completed after restart; dry-run only |
 | Claude Code | `claude_code` | Current local native validation completed; dry-run only |
 | Gemini CLI | `gemini_cli` | Current local native validation completed; dry-run only |
+| Qwen Code CLI | `qwen_code` | Current local native validation completed with Ollama backend; non-destructive MCP tool workflow |
 | Generic MCP Host | `generic_mcp_host` | Diagnostic profile only; host-specific claims require separate evidence |
 
 For evidence levels and publication claims, see `docs/support-matrix.md`.
@@ -58,6 +59,22 @@ Expected profile:
 ```text
 CPE_HOST_PROFILE=gemini_cli
 ```
+
+## Qwen Code CLI
+
+Preview:
+
+```bash
+cpe-scan install-snippet --client qwen --json
+```
+
+Qwen Code CLI local validation used an existing MCP registration with:
+
+```text
+CPE_HOST_PROFILE=qwen_code
+```
+
+The current evidence is scoped to non-destructive MCP tool calls and native MCP tool discovery through Qwen Code CLI.
 
 ## Platforms
 

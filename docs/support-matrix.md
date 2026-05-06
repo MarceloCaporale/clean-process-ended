@@ -1,6 +1,6 @@
 # Support Matrix
 
-This matrix describes public support intent for `clean-process-ended` v0.7.2. It does not authorize real cleanup. Cleanup remains dry-run by default, and public CLI/MCP real termination is non-operable in v0.7.2.
+This matrix describes public support intent for `clean-process-ended` v0.7.3. It does not authorize real cleanup. Cleanup remains dry-run by default, and public CLI/MCP real termination is non-operable in v0.7.3.
 
 ## Evidence Levels
 
@@ -14,12 +14,13 @@ This matrix describes public support intent for `clean-process-ended` v0.7.2. It
 
 ## Host Matrix
 
-| Host | Profile | v0.7.2 status | Evidence level | Required before stronger claim |
+| Host | Profile | v0.7.3 status | Evidence level | Required before stronger claim |
 | --- | --- | --- | --- | --- |
 | Codex Desktop | `codex` | Current local validation completed after Codex restart; dry-run only. | L3 local | Capture publication evidence bundle and keep cleanup real untested. |
-| Claude Code | `claude_code` | Current local native validation completed for v0.7.2; dry-run only. | L3 local with sanitized evidence summary | Keep evidence sanitized before any public release and keep cleanup real untested. |
-| Gemini CLI | `gemini_cli` | Current local native validation completed for v0.7.2; dry-run only. | L3 local with sanitized evidence summary | Capture raw tool JSON before claiming external audit parity with Claude evidence. |
-| Generic MCP Host | `generic_mcp_host` | Diagnostic profile only. | L1-L2 through generic smoke | Do not claim host-specific ownership beyond generic evidence. |
+| Claude Code | `claude_code` | Current local native validation completed; dry-run only. | L3 local with sanitized evidence summary | Keep evidence sanitized before any public release and keep cleanup real untested. |
+| Gemini CLI | `gemini_cli` | Current local native validation completed; dry-run only. | L3 local with sanitized evidence summary | Capture raw tool JSON before claiming external audit parity with Claude evidence. |
+| Qwen Code CLI | `qwen_code` | Current local native non-destructive MCP tool validation completed through Qwen Code CLI with Ollama backend. | L3 local non-destructive MCP evidence with sanitized summary | Capture full dry-run close-check evidence before claiming parity with Codex, Claude or Gemini dry-run evidence. |
+| Generic MCP Host | `generic_mcp_host` | Generic profile for testing MCP-compatible hosts. | L1-L2 through generic smoke | Do not claim host-specific ownership beyond generic evidence. |
 
 ## Platform Matrix
 

@@ -35,6 +35,7 @@ test("managed runner records explicit child lifecycle without command lines", as
   assert.ok(record.createTimeMs);
   assert.ok(record.scannerCommandHash);
   assert.ok(record.argvHash);
+  assert.equal(record.matchStatus, "observed_strong");
   const raw = fs.readFileSync(path.join(dir, "ledger.json"), "utf8");
   assert.doesNotMatch(raw, /process\.exit/);
 });

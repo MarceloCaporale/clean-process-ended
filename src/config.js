@@ -1,6 +1,12 @@
 import fs from "node:fs";
 import path from "node:path";
-import { getDefaultConfigPaths, getInstallHome, getProjectConfigPath } from "./paths.js";
+import {
+  canonicalizeFilesystemPath,
+  getDefaultConfigPaths,
+  getInstallHome,
+  getProjectConfigPath,
+  isSameFilesystemPath,
+} from "./paths.js";
 
 export const REAL_CLEANUP_ACKNOWLEDGEMENT = "I_UNDERSTAND_REAL_CLEANUP_TERMINATES_PROCESSES";
 
@@ -160,6 +166,8 @@ export const DEFAULT_CONFIG = Object.freeze({
       "cursor.exe",
       "codex",
       "codex.exe",
+      "qwen",
+      "qwen.exe",
     ],
   },
   profiles: {
@@ -189,6 +197,15 @@ export const DEFAULT_CONFIG = Object.freeze({
           processNames: ["gemini", "gemini.exe"],
           commandLineIncludes: [".gemini", "gemini mcp"],
           pathIncludes: [".gemini"],
+        },
+      },
+      qwen_code: {
+        enabled: true,
+        confidence: "signal",
+        match: {
+          processNames: ["qwen", "qwen.exe"],
+          commandLineIncludes: [".qwen", "qwen mcp", "qwen code"],
+          pathIncludes: [".qwen"],
         },
       },
       generic_mcp_host: {
@@ -328,7 +345,8 @@ export function loadConfig(explicitPath) {
 
 function enforceUnsafeConfigGuards(config, { explicitPath, loadedPaths, configMeta }) {
   const projectConfigPath = getProjectConfigPath();
-  const projectConfigLoadedImplicitly = !explicitPath && loadedPaths.includes(projectConfigPath);
+  const projectConfigLoadedImplicitly =
+    !explicitPath && loadedPaths.some((loadedPath) => isSamePath(loadedPath, projectConfigPath));
   if (projectConfigLoadedImplicitly) {
     config.autoCleanup.enabled = false;
     config.autoCleanup.action = "plan_only";
@@ -409,7 +427,7 @@ function buildConfigMeta({ explicitPath, installConfigPath, projectConfigPath, t
 }
 
 function configSource(candidate, parsed, { explicitPath, installConfigPath, projectConfigPath }) {
-  const resolved = path.resolve(candidate);
+  const resolved = canonicalizeFilesystemPath(candidate);
   const sourceType = isSamePath(resolved, installConfigPath)
     ? "install"
     : isSamePath(resolved, projectConfigPath)
@@ -435,8 +453,7 @@ function hasOwn(value, key) {
 }
 
 function isSamePath(left, right) {
-  if (!left || !right) return false;
-  return path.resolve(left).toLowerCase() === path.resolve(right).toLowerCase();
+  return isSameFilesystemPath(left, right);
 }
 
 function isEnvEnabled(value) {

@@ -29,7 +29,7 @@ test("audit bundle uses a single scan snapshot and does not return a live confir
   const runtime = createRuntime({ configPath: path.join(dir, "missing-config.json"), dataDir: dir });
   const bundle = await buildAuditBundle(runtime, { limit: 5 });
 
-  assert.equal(bundle.version, "0.7.2");
+  assert.equal(bundle.version, "0.7.3");
   assert.equal(bundle.safety.singleSnapshot, true);
   assert.equal(bundle.processScopeReport.ledger.snapshotId, bundle.processCleanupCandidates.ledger.snapshotId);
   assert.equal(bundle.processCleanupDryRun.confirmToken, null);

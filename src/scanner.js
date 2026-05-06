@@ -1,9 +1,23 @@
 import { execFile, spawnSync } from "node:child_process";
 import fs from "node:fs";
+import path from "node:path";
 import { promisify } from "node:util";
 import { basenameSafe } from "./format.js";
 
 const execFileAsync = promisify(execFile);
+const ALLOWED_WINDOWS_POWERSHELL_BASENAMES = new Set(["powershell.exe", "pwsh.exe"]);
+const POSIX_PS_AGE_FIELD = process.platform === "darwin" ? "etime" : "etimes";
+
+export function resolvePowerShellExecutable(value = process.env.CPE_POWERSHELL) {
+  const raw = String(value || "").trim();
+  if (!raw) return "powershell.exe";
+  const candidate = raw.replace(/^"(.+)"$/, "$1");
+  const base = path.basename(candidate).toLowerCase();
+  if (!ALLOWED_WINDOWS_POWERSHELL_BASENAMES.has(base)) {
+    throw new Error("CPE_POWERSHELL must point to powershell.exe or pwsh.exe");
+  }
+  return candidate;
+}
 
 export async function scanProcesses({ timeoutMs = 9000 } = {}) {
   const scannedAtMs = Date.now();
@@ -47,42 +61,59 @@ export async function scanProcessByPid(pid, { timeoutMs = 3000 } = {}) {
 }
 
 async function scanPosix({ timeoutMs, scannedAtMs }) {
-  const args = ["-axo", "pid=,ppid=,etimes=,pcpu=,rss=,comm=,args="];
-  const { stdout } = await execFileAsync("ps", args, {
-    timeout: timeoutMs,
+  const processes = await scanPosixWithAgeField({
+    argsPrefix: ["-axo"],
+    ageField: POSIX_PS_AGE_FIELD,
+    fallbackAgeField: POSIX_PS_AGE_FIELD === "etimes" ? "etime" : "etimes",
+    timeoutMs,
     maxBuffer: 10 * 1024 * 1024,
-    windowsHide: true,
+    scannedAtMs,
   });
-
-  const processes = stdout
-    .split(/\r?\n/)
-    .map((line) => parsePosixPsLine(line, scannedAtMs))
-    .filter(Boolean);
   return enrichLinuxProcStartTimes(processes, scannedAtMs);
 }
 
 async function scanPosixProcessByPid({ pid, timeoutMs, scannedAtMs }) {
-  const args = ["-p", String(pid), "-o", "pid=,ppid=,etimes=,pcpu=,rss=,comm=,args="];
+  const processes = await scanPosixWithAgeField({
+    argsPrefix: ["-p", String(pid), "-o"],
+    ageField: POSIX_PS_AGE_FIELD,
+    fallbackAgeField: POSIX_PS_AGE_FIELD === "etimes" ? "etime" : "etimes",
+    timeoutMs,
+    maxBuffer: 1024 * 1024,
+    scannedAtMs,
+  });
+  return enrichLinuxProcStartTimes(processes, scannedAtMs).find((item) => item?.pid === pid) || null;
+}
+
+async function scanPosixWithAgeField({ argsPrefix, ageField, fallbackAgeField, timeoutMs, maxBuffer, scannedAtMs }) {
+  try {
+    return await scanPosixWithPsArgs({ argsPrefix, ageField, timeoutMs, maxBuffer, scannedAtMs });
+  } catch (error) {
+    if (!fallbackAgeField || fallbackAgeField === ageField) throw error;
+    return scanPosixWithPsArgs({ argsPrefix, ageField: fallbackAgeField, timeoutMs, maxBuffer, scannedAtMs });
+  }
+}
+
+async function scanPosixWithPsArgs({ argsPrefix, ageField, timeoutMs, maxBuffer, scannedAtMs }) {
+  const args = [...argsPrefix, `pid=,ppid=,${ageField}=,pcpu=,rss=,comm=,args=`];
   const { stdout } = await execFileAsync("ps", args, {
     timeout: timeoutMs,
-    maxBuffer: 1024 * 1024,
+    maxBuffer,
     windowsHide: true,
   });
-  const processes = stdout
+  return stdout
     .split(/\r?\n/)
     .map((line) => parsePosixPsLine(line, scannedAtMs))
     .filter(Boolean);
-  return enrichLinuxProcStartTimes(processes, scannedAtMs).find((item) => item?.pid === pid) || null;
 }
 
 export function parsePosixPsLine(line, scannedAtMs = Date.now()) {
   const trimmed = String(line || "").trim();
   if (!trimmed) return null;
 
-  let match = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+)\s+([0-9]+(?:\.[0-9]+)?)\s+(\d+)\s+(\S+)\s*(.*)$/);
+  let match = trimmed.match(/^(\d+)\s+(\d+)\s+(\S+)\s+([0-9]+(?:\.[0-9]+)?)\s+(\d+)\s+(\S+)\s*(.*)$/);
   let rssKb;
   if (!match) {
-    match = trimmed.match(/^(\d+)\s+(\d+)\s+(\d+)\s+([0-9]+(?:\.[0-9]+)?)\s+(\S+)\s*(.*)$/);
+    match = trimmed.match(/^(\d+)\s+(\d+)\s+(\S+)\s+([0-9]+(?:\.[0-9]+)?)\s+(\S+)\s*(.*)$/);
   } else {
     rssKb = Number(match[5]);
   }
@@ -90,7 +121,8 @@ export function parsePosixPsLine(line, scannedAtMs = Date.now()) {
 
   const pid = Number(match[1]);
   const ppid = Number(match[2]);
-  const ageSeconds = Number(match[3]);
+  const age = parsePosixAge(match[3]);
+  const ageSeconds = age.seconds;
   const cpuPercent = Number(match[4]);
   const executablePath = match[rssKb === undefined ? 5 : 6] || "";
   const commandLine = (match[rssKb === undefined ? 6 : 7] || executablePath || "").trim();
@@ -104,7 +136,7 @@ export function parsePosixPsLine(line, scannedAtMs = Date.now()) {
     executablePath,
     commandLine,
     createTimeMs,
-    createTimeSource: "posix_ps_etimes",
+    createTimeSource: age.source,
     createTimeResolutionMs: 1000,
     createTimeToleranceMs: 2000,
     ageSeconds,
@@ -113,6 +145,35 @@ export function parsePosixPsLine(line, scannedAtMs = Date.now()) {
     hasVisibleWindow: false,
     windowTitle: "",
   });
+}
+
+function parsePosixAge(value) {
+  const raw = String(value || "").trim();
+  if (/^\d+$/.test(raw)) return { seconds: Number(raw), source: "posix_ps_etimes" };
+
+  let days = 0;
+  let timePart = raw;
+  const daySplit = raw.split("-");
+  if (daySplit.length === 2) {
+    days = Number(daySplit[0]);
+    timePart = daySplit[1];
+  } else if (daySplit.length > 2) {
+    return { seconds: undefined, source: "posix_ps_etime" };
+  }
+
+  const parts = timePart.split(":").map((part) => Number(part));
+  if (parts.some((part) => !Number.isFinite(part))) return { seconds: undefined, source: "posix_ps_etime" };
+  if (!Number.isFinite(days) || days < 0) return { seconds: undefined, source: "posix_ps_etime" };
+
+  if (parts.length === 2) {
+    const [minutes, seconds] = parts;
+    return { seconds: days * 86400 + minutes * 60 + seconds, source: "posix_ps_etime" };
+  }
+  if (parts.length === 3) {
+    const [hours, minutes, seconds] = parts;
+    return { seconds: days * 86400 + hours * 3600 + minutes * 60 + seconds, source: "posix_ps_etime" };
+  }
+  return { seconds: undefined, source: "posix_ps_etime" };
 }
 
 async function scanWindowsProcessByPid({ pid, timeoutMs, scannedAtMs }) {
@@ -137,7 +198,7 @@ if ($null -ne $p) {
 }
 `.replace("__PID__", String(pid));
 
-  const shell = process.env.CPE_POWERSHELL || "powershell.exe";
+  const shell = resolvePowerShellExecutable();
   let stdout;
   try {
     ({ stdout } = await execFileAsync(shell, ["-NoProfile", "-NonInteractive", "-Command", script], {
@@ -223,7 +284,7 @@ Get-CimInstance Win32_Process | ForEach-Object {
 } | ConvertTo-Json -Compress -Depth 3
 `;
 
-  const shell = process.env.CPE_POWERSHELL || "powershell.exe";
+  const shell = resolvePowerShellExecutable();
   let stdout;
   try {
     ({ stdout } = await execFileAsync(shell, ["-NoProfile", "-NonInteractive", "-Command", script], {

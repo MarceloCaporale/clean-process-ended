@@ -11,7 +11,7 @@
 
 - Public transport: stdio.
 - The server must keep JSON-RPC stdout clean.
-- Diagnostic logs should not be written to stdout while serving MCP.
+- Diagnostic/resource logs should not be written to stdout while serving MCP.
 
 ## Hosts
 
@@ -20,6 +20,7 @@
 | Codex | `codex` | Native local validation completed. |
 | Claude Code | `claude_code` | Native local validation completed. |
 | Gemini CLI | `gemini_cli` | Native local validation completed. |
-| Generic MCP Host | `generic_mcp_host` | Diagnostic profile only; validate concrete hosts separately. |
+| Qwen Code CLI | `qwen_code` | Native local non-destructive MCP tool validation completed with Ollama backend. |
+| Generic MCP Host | `generic_mcp_host` | Generic profile for MCP-compatible host testing; validate concrete hosts separately. |
 
 See `docs/support-matrix.md` and `docs/validation/evidence/`.

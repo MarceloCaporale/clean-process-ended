@@ -1,7 +1,7 @@
 {
   "name": "clean-process-ended",
-  "version": "0.7.2",
-  "description": "Ownership-first local MCP process janitor for AI coding agents with dry-run close checks and managed process evidence.",
+  "version": "0.7.3",
+  "description": "Ownership-first local MCP process janitor for AI coding agents with runtime validation metrics, dry-run close checks and managed evidence.",
   "type": "module",
   "license": "Apache-2.0",
   "author": {
@@ -58,9 +58,12 @@
     "docs/validation/evidence/codex-v0.7.2.md",
     "docs/validation/evidence/claude-code-v0.7.2.md",
     "docs/validation/evidence/gemini-cli-v0.7.2.md",
+    "docs/validation/evidence/qwen-cli-v0.7.3.md",
     "docs/verification/README.md",
     "docs/verification/v0.7.2/README.md",
     "docs/verification/v0.7.2/release-gate-summary.md",
+    "docs/verification/v0.7.3/README.md",
+    "docs/verification/v0.7.3/release-gate-summary.md",
     "docs/WHEN_TO_USE.md",
     "scripts/check-syntax.mjs",
     "scripts/smoke-packed-tarball.mjs",
@@ -73,11 +76,13 @@
     "README_JA.md",
     "CHANGELOG.md",
     "RELEASE_NOTES_v0.7.2.md",
+    "RELEASE_NOTES_v0.7.3.md",
     "SECURITY.md",
     "SUPPORT.md",
     "server.json",
     "LICENSE",
     "NOTICE",
+    "eslint.config.js",
     ".clean-process-ended-mcp.example.json"
   ],
   "scripts": {
@@ -86,6 +91,8 @@
     "candidates": "node ./bin/cpe-scan.js candidates --json",
     "dry-run": "node ./bin/cpe-scan.js cleanup --dry-run --scope owned_current_session --json",
     "smoke:stdio": "node ./bin/cpe-scan.js smoke-stdio --json",
+    "lint": "eslint \"bin/**/*.js\" \"src/**/*.js\" \"scripts/**/*.mjs\" \"test/**/*.js\" \"eslint.config.js\"",
+    "lint:fix": "npm run lint -- --fix",
     "check:syntax": "node ./scripts/check-syntax.mjs",
     "validate:package": "node ./bin/cpe-scan.js validate-package --json",
     "validate:package:strict": "node ./bin/cpe-scan.js validate-package --strict-public --json",
@@ -95,8 +102,12 @@
     "package:pack:dry-run": "npm pack --dry-run --json",
     "package:smoke-tarball": "node ./scripts/smoke-packed-tarball.mjs",
     "pack:dry-run": "npm pack --dry-run --json",
-    "public-beta-candidate": "npm run check:syntax && npm test && npm run smoke:stdio && npm run validate:package:strict && npm run public-tree:check && npm run package:audit && npm run package:pack:dry-run && npm run package:smoke-tarball",
+    "test:ci": "node --test",
+    "ci:portable": "npm run lint && npm run check:syntax && npm run test:ci",
+    "ci:package": "npm run validate:package:strict && npm run public-tree:check && npm run package:audit && npm run package:pack:dry-run && npm run package:smoke-tarball",
+    "public-beta-candidate": "npm run ci:portable && npm run smoke:stdio && npm run ci:package",
     "ci": "npm run public-beta-candidate",
+    "prepublishOnly": "npm run ci",
     "managed:help": "node ./bin/cpe-run.js --help",
     "test": "node --test"
   },
@@ -110,7 +121,12 @@
   "overrides": {
     "ip-address": "10.2.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@eslint/js": "^9.39.4",
+    "eslint": "^9.39.4",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^17.6.0"
+  },
   "keywords": [
     "mcp",
     "model-context-protocol",
@@ -118,6 +134,8 @@
     "codex",
     "claude-code",
     "gemini-cli",
+    "qwen-code",
+    "ollama",
     "codex-agent-mem",
     "ai-coding-agents",
     "ownership",

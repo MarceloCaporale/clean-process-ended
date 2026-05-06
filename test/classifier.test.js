@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { DEFAULT_CONFIG } from "../src/config.js";
 import { analyzeSnapshot } from "../src/classifier.js";
 import { cleanupDecision } from "../src/cleanup.js";
-import { parsePosixPsLine } from "../src/scanner.js";
+import { parsePosixPsLine, resolvePowerShellExecutable } from "../src/scanner.js";
 
 function fakeSnapshot(processes) {
   return {
@@ -39,6 +39,27 @@ function fakeLedger({ baselinePids = [] } = {}) {
     wasProcessRelated: () => false,
   };
 }
+
+test("resolvePowerShellExecutable accepts default and trusted PowerShell executables", () => {
+  assert.equal(resolvePowerShellExecutable(""), "powershell.exe");
+  assert.equal(resolvePowerShellExecutable("powershell.exe"), "powershell.exe");
+  assert.equal(resolvePowerShellExecutable("pwsh.exe"), "pwsh.exe");
+  assert.equal(
+    resolvePowerShellExecutable('"C:\\Program Files\\PowerShell\\7\\pwsh.exe"'),
+    "C:\\Program Files\\PowerShell\\7\\pwsh.exe"
+  );
+});
+
+test("resolvePowerShellExecutable rejects arbitrary binaries and shell-like arguments", () => {
+  assert.throws(
+    () => resolvePowerShellExecutable("cmd.exe"),
+    /CPE_POWERSHELL must point to powershell\.exe or pwsh\.exe/
+  );
+  assert.throws(
+    () => resolvePowerShellExecutable("pwsh.exe -NoProfile"),
+    /CPE_POWERSHELL must point to powershell\.exe or pwsh\.exe/
+  );
+});
 
 test("classifies session-born MCP child with Codex ancestor as owned_current_session safe", () => {
   const startedAtMs = Date.now() - 5000;
@@ -344,11 +365,12 @@ test(".codex path in child command line without host parent is related_unowned",
   assert.ok(child.ownershipEvidence.evidence.includes("expected_host_self_match_only"));
 });
 
-test("claude and gemini root processes are never cleanup candidates", () => {
+test("named host root processes are never cleanup candidates", () => {
   const startedAtMs = Date.now() - 5000;
   const roots = [
     ["claude_code", "claude.exe", "claude mcp-server"],
     ["gemini_cli", "gemini.exe", "gemini mcp-server"],
+    ["qwen_code", "qwen.exe", "qwen mcp-server"],
   ];
 
   for (const [profile, name, commandLine] of roots) {
@@ -534,6 +556,7 @@ test("host markers in parent command line are context, not ownership evidence", 
     ["codex", ".codex"],
     ["claude_code", ".claude"],
     ["gemini_cli", ".gemini"],
+    ["qwen_code", ".qwen"],
   ];
 
   for (const [profile, marker] of cases) {
@@ -583,6 +606,7 @@ test("host markers in parent cwd are context, not ownership evidence", () => {
     ["codex", "/tmp/.codex"],
     ["claude_code", "/tmp/.claude"],
     ["gemini_cli", "/tmp/.gemini"],
+    ["qwen_code", "/tmp/.qwen"],
   ];
 
   for (const [profile, cwd] of cases) {
@@ -955,6 +979,25 @@ test("parsePosixPsLine parses ps output", () => {
   assert.equal(parsed.createTimeResolutionMs, 1000);
   assert.equal(parsed.createTimeToleranceMs, 2000);
   assert.match(parsed.commandLine, /chrome-devtools-mcp/);
+});
+
+test("parsePosixPsLine parses BSD/macOS etime output", () => {
+  const parsed = parsePosixPsLine(" 123 1 01:30 0.1 2048 /usr/bin/node node -e setTimeout(() => {}, 3000)", 1_700_000_000_000);
+  assert.equal(parsed.pid, 123);
+  assert.equal(parsed.ppid, 1);
+  assert.equal(parsed.name, "node");
+  assert.equal(parsed.ageSeconds, 90);
+  assert.equal(parsed.rssBytes, 2_097_152);
+  assert.equal(parsed.rssMb, 2);
+  assert.equal(parsed.createTimeSource, "posix_ps_etime");
+  assert.equal(parsed.createTimeMs, 1_699_999_910_000);
+});
+
+test("parsePosixPsLine parses BSD/macOS etime output with days", () => {
+  const parsed = parsePosixPsLine(" 123 1 1-02:03:04 0.1 2048 /usr/bin/node node script.js", 1_700_000_000_000);
+  assert.equal(parsed.ageSeconds, 93784);
+  assert.equal(parsed.createTimeSource, "posix_ps_etime");
+  assert.equal(parsed.createTimeMs, 1_699_906_216_000);
 });
 
 test("parsePosixPsLine keeps createTimeMs stable inside the same scanned second", () => {

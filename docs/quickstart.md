@@ -21,6 +21,7 @@ Profile values:
 - `codex`
 - `claude_code`
 - `gemini_cli`
+- `qwen_code`
 - `generic_mcp_host`
 
 ## 3. Ask the agent to discover the safe protocol
@@ -29,7 +30,7 @@ Profile values:
 npx -y --package clean-process-ended cpe-scan janitor-discovery --client codex --json
 ```
 
-The discovery payload tells agents to use close checks only for non-destructive diagnostics and never to request `dry_run=false` autonomously.
+The discovery payload tells agents to use close checks only for non-destructive process hygiene and never to request `dry_run=false` autonomously.
 
 ## 4. Run a close-session dry-run
 
@@ -53,4 +54,4 @@ When `codex-agent-mem` is also installed, store only the compact `process_janito
 
 ## 7. Do not run real cleanup from quickstart
 
-The public v0.7.2 CLI/MCP surface is diagnostic and dry-run oriented. Real termination remains non-operable from public CLI/MCP because evidence inputs are intentionally not exposed.
+The public v0.7.3 CLI/MCP surface provides runtime-validated process hygiene, evidence and dry-run planning. Real termination remains non-operable from public CLI/MCP because evidence inputs are intentionally not exposed.

@@ -39,6 +39,7 @@
       "codex": { "enabled": true },
       "claude_code": { "enabled": true },
       "gemini_cli": { "enabled": true },
+      "qwen_code": { "enabled": true },
       "generic_mcp_host": { "enabled": true }
     },
     "tools": {

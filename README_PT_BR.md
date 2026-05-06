@@ -230,6 +230,14 @@ Este gate inclui ESLint, checks de sintaxe, tests, smoke MCP stdio, validacao es
 
 Depois complete `docs/release-checklist.md`, atualize a evidencia de hosts listada em `docs/verification/v0.7.3/README.md`, aguarde GitHub Actions, execute auditoria estatica externa a partir da URL publica do GitHub e avance apenas com aprovacao humana explicita.
 
+## Autor
+
+Criado e mantido por Marcelo Caporale.
+
+- X: [@MarceloCaporale](https://x.com/MarceloCaporale)
+- Estudio: [Visual AI Media](https://visualaimedia.com)
+- Lab: [Visual Systems Lab](https://visualsystemslab.com)
+
 ## Licenca
 
 Apache-2.0.

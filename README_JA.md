@@ -230,6 +230,14 @@ npm run public-beta-candidate
 
 その後 `docs/release-checklist.md` を完了し、`docs/verification/v0.7.3/README.md` にある host evidence を更新し、GitHub Actions を待ち、公開 GitHub URL から外部 static audit を実行し、明示的な人間の承認後にのみ進めます。
 
+## 作者
+
+Marcelo Caporale が作成および保守しています。
+
+- X: [@MarceloCaporale](https://x.com/MarceloCaporale)
+- Studio: [Visual AI Media](https://visualaimedia.com)
+- Lab: [Visual Systems Lab](https://visualsystemslab.com)
+
 ## ライセンス
 
 Apache-2.0.

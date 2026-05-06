@@ -230,6 +230,14 @@ Dieses Gate enthaelt ESLint, Syntax-Checks, Tests, MCP-stdio-Smoke-Validierung, 
 
 Danach `docs/release-checklist.md` abschliessen, Host-Evidenz aus `docs/verification/v0.7.3/README.md` aktualisieren, GitHub Actions abwarten, externe statische Audit-Pruefung von der oeffentlichen GitHub-URL ausfuehren und nur nach expliziter menschlicher Freigabe fortfahren.
 
+## Autor
+
+Erstellt und gepflegt von Marcelo Caporale.
+
+- X: [@MarceloCaporale](https://x.com/MarceloCaporale)
+- Studio: [Visual AI Media](https://visualaimedia.com)
+- Lab: [Visual Systems Lab](https://visualsystemslab.com)
+
 ## Lizenz
 
 Apache-2.0.

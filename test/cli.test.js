@@ -321,11 +321,13 @@ test("localized READMEs carry equivalent public safety and release surface", () 
     /Apache-2\.0/,
     /npm run public-beta-candidate/,
     /tarball/i,
+    /Author|Autor|作者/,
+    /Created and maintained|Creado y mantenido|Erstellt und gepflegt|Criado e mantido|创建并维护|作成および保守/,
   ];
   for (const file of readmes) {
     const content = fs.readFileSync(path.join(ROOT, file), "utf8");
     const headingCount = content.split("\n").filter((line) => line.startsWith("## ")).length;
-    assert.equal(headingCount, 16, file);
+    assert.equal(headingCount, 17, file);
     for (const signal of requiredSignals) {
       assert.match(content, signal, `${file} missing ${signal}`);
     }

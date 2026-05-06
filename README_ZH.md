@@ -230,6 +230,14 @@ npm run public-beta-candidate
 
 然后完成 `docs/release-checklist.md`，刷新 `docs/verification/v0.7.3/README.md` 中列出的 host evidence，等待 GitHub Actions，从公开 GitHub URL 执行外部静态审计，并且只在明确人工批准后继续。
 
+## 作者
+
+由 Marcelo Caporale 创建并维护。
+
+- X: [@MarceloCaporale](https://x.com/MarceloCaporale)
+- Studio: [Visual AI Media](https://visualaimedia.com)
+- Lab: [Visual Systems Lab](https://visualsystemslab.com)
+
 ## 许可证
 
 Apache-2.0。

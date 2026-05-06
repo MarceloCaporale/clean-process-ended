@@ -1,6 +1,6 @@
 # Qwen Code CLI Evidence v0.7.3
 
-Evidence level: L3 native diagnostic tools for Qwen Code CLI with an Ollama-backed Qwen model workflow.
+Evidence level: L3 native diagnostic tool invocation for Qwen Code CLI with an Ollama-backed Qwen model workflow.
 
 ## Summary
 
@@ -8,11 +8,13 @@ Qwen Code CLI `0.15.6` local validation completed with `CPE_HOST_PROFILE=qwen_co
 
 The validation used Qwen Code CLI with Ollama through the OpenAI-compatible endpoint. The host exposed the `clean-process-ended` MCP namespace, injected the expected tools into the Qwen Code CLI session and executed non-destructive diagnostic MCP calls in this workflow.
 
+This evidence is limited to native MCP tool discovery and non-destructive diagnostic tool invocation. It does not claim full dry-run close-check parity with Codex Desktop, Claude Code or Gemini CLI evidence.
+
 ## Models checked
 
 | Model/workflow | Result |
 | --- | --- |
-| Qwen Code CLI with Ollama-backed Qwen models | Native MCP server connected, tools were exposed and non-destructive diagnostic tool calls executed successfully in the validated workflow. |
+| Qwen Code CLI with Ollama-backed Qwen models | Native MCP server connected, tools were exposed and non-destructive diagnostic tool calls executed successfully in the validated workflow. Cleanup dry-run close-check parity is not claimed. |
 
 ## Tools exercised
 
@@ -34,7 +36,7 @@ The Qwen Code CLI session called:
 
 ## Observed safety result
 
-No real cleanup was requested or executed. Validation only used diagnostic tools. `process_cleanup` was explicitly excluded from the tool-call attempts.
+No real cleanup was requested or executed. Validation only used diagnostic tools. `process_cleanup_candidates`, `process_cleanup` and full `session_close_check` dry-run cleanup planning were explicitly excluded from the parity claim for this evidence item.
 
 ## Evidence hygiene
 

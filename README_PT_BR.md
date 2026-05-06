@@ -1,12 +1,16 @@
 # clean-process-ended
 
+<p align="center">
+  <img src="docs/assets/clean-process-ended-social-preview.png" alt="clean-process-ended: local process hygiene for MCP agent workflows" width="100%">
+</p>
+
 Outros idiomas: [English](./README.md) | [Español](./README_ES.md) | [Deutsch](./README_DE.md) | [中文](./README_ZH.md) | [日本語](./README_JA.md)
 
-**Janitor local MCP, ownership-first, para processos de agentes de codigo; pensado para Codex Desktop, Claude Code, Gemini CLI, Qwen Code CLI com modelos Qwen respaldados por Ollama e hosts compativeis com MCP onde subprocessos podem sobreviver ao trabalho util.**
+**Janitor local MCP, ownership-first, para processos de agentes de codigo; pensado para Codex Desktop, Claude Code, Gemini CLI, fluxos nao destrutivos de tools no Qwen Code CLI com modelos Qwen respaldados por Ollama e hosts compativeis com MCP onde subprocessos podem sobreviver ao trabalho util.**
 
 `clean-process-ended` inspeciona subprocessos locais relacionados a sessoes de agentes e MCP, separa ownership de sessao de sinais fracos de semelhanca e produz planos revisaveis de cleanup em dry-run respaldados por evidencia reproduzivel antes de considerar qualquer acao no ambiente.
 
-`clean-process-ended` funciona como servidor MCP local por stdio e foi validado com Codex Desktop, Claude Code, Gemini CLI e Qwen Code CLI usando modelos Qwen respaldados por Ollama. Outros hosts compativeis com MCP podem ser testados pelo perfil MCP generico.
+`clean-process-ended` funciona como servidor MCP local por stdio. Codex Desktop, Claude Code e Gemini CLI tem validacao dry-run; Qwen Code CLI tem validacao nativa de invocacao nao destrutiva de tools MCP com modelos Qwen respaldados por Ollama. Outros hosts compativeis com MCP podem ser testados pelo perfil MCP generico.
 
 Ele foi desenhado para fluxos locais MCP e agentes de codigo nos quais subprocessos, helpers de navegador, devtools, servidores locais ou servidores MCP podem continuar vivos depois da sessao do host ou da tarefa. O projeto classifica processos por evidencia de ownership, nao por semelhanca de nome, e depois informa o que e acionavel, bloqueado, relacionado ou desconhecido.
 
@@ -14,7 +18,7 @@ Ele nao envia evidencia de processos a um servico remoto, nao armazena command l
 
 ## O que entrega
 
-- **Visibilidade de processos de agentes**: ver subprocessos locais relacionados a Codex Desktop, Claude Code, Gemini CLI, Qwen Code CLI com modelos Qwen respaldados por Ollama, hosts MCP genericos e runtimes futuros validados sem depender de cleanup por nome de processo.
+- **Visibilidade de processos de agentes**: ver subprocessos locais relacionados a Codex Desktop, Claude Code, Gemini CLI, fluxos nao destrutivos de tools no Qwen Code CLI com modelos Qwen respaldados por Ollama, hosts MCP genericos e runtimes futuros validados sem depender de cleanup por nome de processo.
 - **Seguranca ownership-first**: classificar `owned_current_session`, `related_unowned` e `unknown_owner` antes de planejar algo destrutivo.
 - **Close checks em dry-run**: dar aos agentes um protocolo concreto de fim de tarefa via `janitor_discovery`, `session_close_check`, relatorios, candidatos e audit bundles.
 - **Evidencia reproduzivel**: gerar receipts sanitizados, evidencia SHA-256, audit bundles e notas de matriz de suporte para revisao.
@@ -50,7 +54,7 @@ A evidencia publica atual da v0.7.3 separa metricas de validacao runtime de metr
 | Codex | Validacao nativa local apos reinicio; apenas dry-run. |
 | Claude Code | Validacao nativa MCP local concluida; apenas dry-run; resumo de evidencia sanitizada disponivel. |
 | Gemini CLI | Validacao nativa MCP local concluida; apenas dry-run; resumo de evidencia sanitizada disponivel. |
-| Qwen Code CLI | Validacao nativa MCP local concluida com modelos Qwen respaldados por Ollama; fluxo MCP nao destrutivo; resumo de evidencia sanitizada disponivel. |
+| Qwen Code CLI | Validacao nativa local de invocacao de tools MCP concluida com modelos Qwen respaldados por Ollama; apenas fluxo diagnostico nao destrutivo; nao se afirma paridade completa com dry-run close-check. |
 | Cleanup real publico | `0` execucoes de cleanup real fazem parte da validacao publica. |
 | Privacidade da evidencia | Receipts publicos sao desenhados para excluir command lines completas, raw process output, env vars, tokens e secrets. |
 
@@ -58,7 +62,7 @@ A evidencia publica atual da v0.7.3 separa metricas de validacao runtime de metr
 
 Estas sao metricas reais de validacao da linha beta publica e do release gate, nao metricas de adocao como stars, forks, downloads ou uso produtivo de terceiros:
 
-- Fluxos host MCP validados: `4` (`codex`, `claude_code`, `gemini_cli`, `qwen_code`), incluindo tres fluxos dry-run de close-check e um fluxo Qwen Code CLI nativo com tools nao destrutivas.
+- Fluxos host MCP validados: `4` (`codex`, `claude_code`, `gemini_cli`, `qwen_code`), incluindo tres fluxos dry-run de close-check e um fluxo Qwen Code CLI nativo de invocacao nao destrutiva de tools MCP; nao se afirma paridade Qwen com dry-run close-check.
 - Superficie smoke MCP stdio: o servidor publicado expoe o catalogo de tools de close-check, relatorios, explain, policy, audit e managed-lifecycle.
 - Release gate local: ESLint, syntax checks, tests Node, smoke MCP stdio, validacao estrita de pacote, public-tree check, dependency audit, `npm pack --dry-run` e smoke de tarball instalado.
 - Matriz GitHub Actions: configurada para Windows, macOS e Linux em Node 18, 20 e 22.
@@ -112,7 +116,7 @@ Esta matriz descreve a intencao publica dos perfis e o status de validacao para 
 | Codex | `codex` | Validacao local atual concluida apos reinicio; apenas dry-run. |
 | Claude Code | `claude_code` | Validacao nativa local atual concluida; apenas dry-run. |
 | Gemini CLI | `gemini_cli` | Validacao nativa local atual concluida; apenas dry-run. |
-| Qwen Code CLI | `qwen_code` | Validacao nativa local atual concluida com modelos Qwen respaldados por Ollama; fluxo MCP nao destrutivo. |
+| Qwen Code CLI | `qwen_code` | Validacao nativa local atual de invocacao de tools MCP concluida com modelos Qwen respaldados por Ollama; apenas fluxo diagnostico nao destrutivo. |
 | Host MCP generico | `generic_mcp_host` | Perfil diagnostico apenas; claims de ownership especifico por host exigem evidencia separada. |
 
 ## CLI

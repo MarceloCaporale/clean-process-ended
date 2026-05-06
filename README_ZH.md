@@ -1,12 +1,16 @@
 # clean-process-ended
 
+<p align="center">
+  <img src="docs/assets/clean-process-ended-social-preview.png" alt="clean-process-ended: local process hygiene for MCP agent workflows" width="100%">
+</p>
+
 其他语言：[English](./README.md) | [Español](./README_ES.md) | [Deutsch](./README_DE.md) | [Português do Brasil](./README_PT_BR.md) | [日本語](./README_JA.md)
 
-**面向 AI coding agent 的 ownership-first 本地 MCP process janitor；适用于 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI，以及 MCP-compatible host 工作流，尤其是子进程可能比实际任务更长寿的场景。**
+**面向 AI coding agent 的 ownership-first 本地 MCP process janitor；适用于 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI 非破坏性 tool 工作流，以及 MCP-compatible host 工作流，尤其是子进程可能比实际任务更长寿的场景。**
 
 `clean-process-ended` 检查与 agent 和 MCP session 相关的本地子进程，把 session ownership 与弱相似度信号分开，并在考虑任何环境操作之前生成可审查、由 reproducible evidence 支撑的 dry-run cleanup plan。
 
-`clean-process-ended` 作为本地 stdio MCP server 运行，并已在 Codex Desktop、Claude Code、Gemini CLI，以及使用 Ollama-backed Qwen models 的 Qwen Code CLI 中验证。其他 MCP-compatible hosts 可以通过 generic MCP profile 测试。
+`clean-process-ended` 作为本地 stdio MCP server 运行。Codex Desktop、Claude Code 和 Gemini CLI 具备 dry-run 验证；使用 Ollama-backed Qwen models 的 Qwen Code CLI 具备 native 非破坏性 MCP tool invocation 验证。其他 MCP-compatible hosts 可以通过 generic MCP profile 测试。
 
 它面向本地 MCP 和 coding-agent 工作流，在这些工作流中，子进程、browser helper、devtools、本地服务器或 MCP server 可能在 host session 或任务结束后继续运行。本项目按 ownership evidence 分类进程，而不是按进程名相似度分类，然后报告哪些是可操作的、被阻止的、相关的或未知的。
 
@@ -14,7 +18,7 @@
 
 ## 你得到的能力
 
-- **Agent process visibility**：查看与 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI、generic MCP host 以及未来已验证 runtime 相关的本地子进程，而不是按进程名清理。
+- **Agent process visibility**：查看与 Codex Desktop、Claude Code、Gemini CLI、使用 Ollama-backed Qwen models 的 Qwen Code CLI 非破坏性 tool 工作流、generic MCP host 以及未来已验证 runtime 相关的本地子进程，而不是按进程名清理。
 - **Ownership-first safety**：在规划任何破坏性操作之前，先分类 `owned_current_session`、`related_unowned` 和 `unknown_owner`。
 - **Dry-run close checks**：通过 `janitor_discovery`、`session_close_check`、report、candidate 和 audit bundle 给 agent 一个明确的任务结束协议。
 - **Reproducible evidence**：生成 sanitized receipt、SHA-256 evidence、audit bundle 和 support-matrix notes 供审查。
@@ -50,7 +54,7 @@
 | Codex | 重启后的本地 native validation；仅 dry-run。 |
 | Claude Code | 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
 | Gemini CLI | 本地 native MCP validation 已完成；仅 dry-run；提供已清理的 evidence summary。 |
-| Qwen Code CLI | 使用 Ollama-backed Qwen models 的本地 native MCP validation 已完成；非破坏性 MCP tool workflow；提供已清理的 evidence summary。 |
+| Qwen Code CLI | 使用 Ollama-backed Qwen models 的本地 native MCP tool invocation validation 已完成；仅限非破坏性 diagnostic workflow；不声称完整 dry-run close-check parity。 |
 | Public cleanup real | public validation 中真实 cleanup 执行为 `0`。 |
 | Evidence privacy | Public receipts 设计为排除完整 command lines、raw process output、env vars、tokens 和 secrets。 |
 
@@ -58,7 +62,7 @@
 
 这些是 public beta line 和 release gate 的真实 validation metrics，不是 stars、forks、downloads 或第三方生产使用这类 adoption metrics：
 
-- 已验证 MCP host workflows：`4`（`codex`、`claude_code`、`gemini_cli`、`qwen_code`），包括三个 dry-run close-check workflows 和一个 Qwen Code CLI native non-destructive tool workflow。
+- 已验证 MCP host workflows：`4`（`codex`、`claude_code`、`gemini_cli`、`qwen_code`），包括三个 dry-run close-check workflows 和一个 Qwen Code CLI native non-destructive MCP tool invocation workflow；不声称 Qwen dry-run close-check parity。
 - MCP stdio smoke surface：发布的 server 暴露 close-check、report、explain、policy、audit 和 managed-lifecycle tool catalog。
 - 本地 release gate：ESLint、syntax checks、Node tests、MCP stdio smoke、strict package validation、public-tree check、dependency audit、`npm pack --dry-run` 和 installed-tarball smoke。
 - GitHub Actions matrix：配置为 Windows、macOS、Linux，覆盖 Node 18、20、22。
@@ -112,7 +116,7 @@ env = { CPE_HOST_PROFILE = "codex" }
 | Codex | `codex` | 当前本地验证已在重启后完成；仅 dry-run。 |
 | Claude Code | `claude_code` | 当前本地 native validation 已完成；仅 dry-run。 |
 | Gemini CLI | `gemini_cli` | 当前本地 native validation 已完成；仅 dry-run。 |
-| Qwen Code CLI | `qwen_code` | 使用 Ollama-backed Qwen models 的当前本地 native validation 已完成；非破坏性 MCP tool workflow。 |
+| Qwen Code CLI | `qwen_code` | 使用 Ollama-backed Qwen models 的当前本地 native MCP tool invocation validation 已完成；仅限非破坏性 diagnostic workflow。 |
 | Generic MCP Host | `generic_mcp_host` | 仅 diagnostic profile；host-specific ownership claims 需要单独 evidence。 |
 
 ## CLI

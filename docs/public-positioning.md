@@ -26,7 +26,7 @@ It should be positioned as a practical developer-experience tool: less guesswork
 ## Compatibility Framing
 
 - Codex Desktop, Claude Code and Gemini CLI have current local dry-run validation evidence.
-- Qwen Code CLI with Ollama-backed Qwen models has current local native non-destructive MCP tool validation evidence.
+- Qwen Code CLI with Ollama-backed Qwen models has current local native non-destructive MCP tool-invocation evidence; cleanup dry-run close-check parity is not claimed.
 - Additional hosts should be described only after a concrete profile, native MCP tool calls and an evidence bundle exist.
 - Generic MCP compatibility is a protocol and configuration claim, not a guarantee that every host will invoke the janitor automatically.
 
@@ -37,7 +37,7 @@ Use metrics that are tied to evidence. These are runtime validation metrics, not
 - `0` public real-cleanup executions in validation.
 - dry-run-only host validation for the current Codex Desktop, Claude Code and Gemini CLI public beta evidence.
 - L3 local evidence for Codex Desktop, Claude Code and Gemini CLI.
-- L3 local non-destructive MCP tool evidence for Qwen Code CLI with Ollama-backed Qwen models.
+- L3 local non-destructive MCP tool-invocation evidence for Qwen Code CLI with Ollama-backed Qwen models.
 - MCP stdio smoke, package validation, installed-tarball smoke and dependency-audit gates in `npm run public-beta-candidate`.
 - sanitized receipts and audit bundles designed to omit command lines, raw process output, env vars, tokens and secrets.
 

@@ -7,8 +7,9 @@
 - Presents the package as runtime-validated local process hygiene, evidence and dry-run cleanup planning, not as a "diagnostics only" tool.
 - Adds explicit public validation metrics for the current beta line: validated host workflows, exposed MCP tool surface, test gate, dependency audit, tarball smoke and `0` public real-cleanup executions.
 - Keeps real termination non-operable from the public CLI/MCP surface while making the tested value proposition clearer.
-- Records Qwen Code CLI validation with Ollama-backed Qwen models without adding unverified host claims.
+- Records Qwen Code CLI non-destructive MCP tool-invocation validation with Ollama-backed Qwen models without adding unverified host or cleanup-parity claims.
 - Constrains the Windows `CPE_POWERSHELL` override to trusted PowerShell executable names and rejects arbitrary binaries or shell-like arguments.
+- Parses trusted `CPE_POWERSHELL` Windows paths with Windows path semantics across all CI platforms.
 - Fixes the macOS CI failure class seen in v0.7.2 by using filesystem realpath identity for project config paths and supporting BSD/macOS `ps etime` process age output.
 - Splits GitHub Actions into explicit release gates and adds macOS-only failure diagnostics for future scanner regressions.
 - Documents the Windows scanner CPU-sampling cost so operators understand why a close check can take more than one second on process-heavy machines.

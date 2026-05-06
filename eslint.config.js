@@ -28,7 +28,10 @@ export default [
     },
     rules: {
       "no-console": "off",
-      "no-unused-vars": ["warn", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
+      "consistent-return": "error",
+      eqeqeq: "error",
+      "no-implicit-coercion": "error",
+      "no-unused-vars": ["error", { argsIgnorePattern: "^_", varsIgnorePattern: "^_" }],
       "no-var": "error",
       "prefer-const": "error",
     },

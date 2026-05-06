@@ -9,7 +9,7 @@ v0.7.3 is a public framing, validation-metrics and scanner-hardening release. It
 - Codex Desktop: current public beta evidence exists for native local validation with expected profile `codex`, watcher disabled and dry-run behavior.
 - Claude Code: current public beta evidence exists for native MCP validation with expected profile `claude_code`, watcher disabled and dry-run behavior.
 - Gemini CLI: current public beta evidence exists for native MCP validation with expected profile `gemini_cli`, watcher disabled and dry-run behavior.
-- Qwen Code CLI: current public beta evidence exists for native diagnostic MCP tool calls with expected profile `qwen_code` and an Ollama-backed Qwen model workflow.
+- Qwen Code CLI: current public beta evidence exists for native diagnostic MCP tool calls with expected profile `qwen_code` and an Ollama-backed Qwen model workflow; cleanup dry-run close-check parity is not claimed.
 - Generic MCP hosts: can be tested with `generic_mcp_host`, but host-specific ownership claims require separate evidence.
 
 Public sanitized host summaries live in `docs/validation/evidence/`. Raw local bundles are intentionally excluded from the package.
@@ -18,7 +18,7 @@ Public sanitized host summaries live in `docs/validation/evidence/`. Raw local b
 
 These are runtime validation metrics, not adoption metrics:
 
-- Validated MCP host workflows in the current beta evidence line: `4` (`codex`, `claude_code`, `gemini_cli`, `qwen_code`), including three dry-run close-check workflows and one Qwen Code CLI native non-destructive MCP tool workflow.
+- Validated MCP host workflows in the current beta evidence line: `4` (`codex`, `claude_code`, `gemini_cli`, `qwen_code`), including three dry-run close-check workflows and one Qwen Code CLI native non-destructive MCP tool-invocation workflow; Qwen dry-run close-check parity is not claimed.
 - MCP stdio smoke surface: expected to expose the shipped tool catalog through the installed package.
 - Local Node test suite: expected to pass as part of `npm run public-beta-candidate`.
 - GitHub Actions matrix: configured for Windows, macOS and Linux across Node 18, 20 and 22.
@@ -35,7 +35,7 @@ These are runtime validation metrics, not adoption metrics:
 - Windows scanner performance notes document the CPU-sampling delay used for resource impact.
 - Public docs frame the release as process hygiene, evidence and dry-run cleanup planning, not as "diagnostics only".
 - Public docs do not claim native validation for unverified hosts.
-- Public docs mention Qwen only as Qwen Code CLI validation with Ollama-backed Qwen models.
+- Public docs mention Qwen only as Qwen Code CLI non-destructive MCP tool-invocation validation with Ollama-backed Qwen models.
 
 ## Required Host Revalidation Template
 

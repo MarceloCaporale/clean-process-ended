@@ -12,7 +12,7 @@ export function resolvePowerShellExecutable(value = process.env.CPE_POWERSHELL) 
   const raw = String(value || "").trim();
   if (!raw) return "powershell.exe";
   const candidate = raw.replace(/^"(.+)"$/, "$1");
-  const base = path.basename(candidate).toLowerCase();
+  const base = path.win32.basename(candidate).toLowerCase();
   if (!ALLOWED_WINDOWS_POWERSHELL_BASENAMES.has(base)) {
     throw new Error("CPE_POWERSHELL must point to powershell.exe or pwsh.exe");
   }

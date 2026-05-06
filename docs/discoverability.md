@@ -4,7 +4,7 @@ This document captures metadata and phrasing for GitHub, npm, the MCP Registry a
 
 ## Recommended GitHub description
 
-`Ownership-first local MCP process janitor for AI coding agents: runtime validation metrics, dry-run close checks, managed process evidence and conservative cleanup planning for Codex Desktop, Claude Code, Gemini CLI and Qwen Code CLI with Ollama-backed Qwen models.`
+`Ownership-first local MCP process janitor for AI coding agents: runtime validation metrics, dry-run close checks, managed process evidence and conservative cleanup planning for Codex Desktop, Claude Code, Gemini CLI and Qwen Code CLI non-destructive tool workflows with Ollama-backed Qwen models.`
 
 ## Recommended GitHub topics
 
@@ -51,7 +51,7 @@ Together, they improve end-of-task experience by reducing repeated context and a
 - Claude Code process cleanup
 - Gemini CLI process cleanup
 - Qwen Code MCP diagnostics
-- Ollama-backed Qwen MCP workflow
+- Ollama-backed Qwen MCP tool-invocation workflow
 - AI agent subprocess diagnostics
 - AI coding agent subprocess diagnostics
 - local-first process diagnostics
@@ -71,7 +71,7 @@ Together, they improve end-of-task experience by reducing repeated context and a
 ## Rules for future docs
 
 - Prefer concrete safety language over broad automation claims.
-- Repeat important terms naturally: `MCP`, `local-first`, `process janitor`, `AI coding agents`, `dry-run cleanup`, `session close check`, `Codex`, `Claude Code`, `Gemini CLI`, `Qwen Code CLI`, `Ollama-backed Qwen models`, and `codex-agent-mem`.
+- Repeat important terms naturally: `MCP`, `local-first`, `process janitor`, `AI coding agents`, `dry-run cleanup`, `session close check`, `Codex`, `Claude Code`, `Gemini CLI`, `Qwen Code CLI`, `Ollama-backed Qwen models`, `non-destructive tool invocation`, and `codex-agent-mem`.
 - Do not describe cleanup real or auto-cleanup terminate as generally available.
 - Do not claim host validation without evidence for that host/runtime.
 - Keep `codex-agent-mem` integration optional and receipt-based.

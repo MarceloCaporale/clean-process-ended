@@ -4,8 +4,9 @@
 
 - Reframed the public beta as runtime-validated process hygiene, evidence and dry-run planning instead of "diagnostics only".
 - Added public validation metrics language so agents and reviewers can distinguish real runtime validation metrics from adoption metrics.
-- Documented Qwen Code CLI validation with Ollama-backed Qwen models without adding unverified host claims.
+- Documented Qwen Code CLI non-destructive MCP tool-invocation validation with Ollama-backed Qwen models without adding unverified host or cleanup-parity claims.
 - Hardened the Windows `CPE_POWERSHELL` override so it only accepts `powershell.exe` or `pwsh.exe` executables, without shell-like arguments.
+- Made trusted `CPE_POWERSHELL` Windows path parsing platform-stable by using Windows path semantics in the resolver.
 - Documented Windows scanner latency from the CPU-sample interval and kept it outside the cleanup safety decision.
 - Added regression tests for the PowerShell override resolver.
 - Hardened macOS/POSIX scanning by supporting BSD `ps etime` output in addition to Linux/procps `etimes`.

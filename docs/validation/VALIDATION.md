@@ -17,7 +17,7 @@ Validation is evidence-scoped. A host is only described at the level actually ob
 | Codex | `codex` | L3 native tools | Validated locally; dry-run only. |
 | Claude Code | `claude_code` | L3 native tools | Validated locally; dry-run only. |
 | Gemini CLI | `gemini_cli` | L3 native tools | Validated locally; dry-run only. |
-| Qwen Code CLI | `qwen_code` | L3 native non-destructive tools | Validated locally through Qwen Code CLI with Ollama backend; non-destructive MCP tool workflow. |
+| Qwen Code CLI | `qwen_code` | L3 native non-destructive tools | Validated locally through Qwen Code CLI with Ollama backend; non-destructive MCP tool-invocation workflow only, with no cleanup dry-run close-check parity claim. |
 | Generic MCP Host | `generic_mcp_host` | L1-L2 automated/stdio smoke | Generic profile for MCP-compatible host testing; host-specific validation requires separate evidence. |
 
 ## Safety requirements for validation

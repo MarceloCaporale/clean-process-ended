@@ -16,7 +16,7 @@ Gemini CLI can register and connect stdio MCP servers. Native validation should 
 
 ## Qwen Code CLI
 
-Qwen Code CLI can register and connect stdio MCP servers. Current local evidence covers native non-destructive MCP tool calls through an Ollama-backed Qwen model workflow; capture full close-check dry-run evidence before making stronger cleanup-planning claims.
+Qwen Code CLI can register and connect stdio MCP servers. Current local evidence covers native non-destructive MCP tool calls through an Ollama-backed Qwen model workflow only; capture full close-check dry-run evidence before making stronger cleanup-planning claims.
 
 ## Agent behavior
 

@@ -20,7 +20,7 @@
 | Codex | `codex` | Native local validation completed. |
 | Claude Code | `claude_code` | Native local validation completed. |
 | Gemini CLI | `gemini_cli` | Native local validation completed. |
-| Qwen Code CLI | `qwen_code` | Native local non-destructive MCP tool validation completed with Ollama backend. |
+| Qwen Code CLI | `qwen_code` | Native local non-destructive MCP tool-invocation validation completed with Ollama backend; cleanup dry-run close-check parity is not claimed. |
 | Generic MCP Host | `generic_mcp_host` | Generic profile for MCP-compatible host testing; validate concrete hosts separately. |
 
 See `docs/support-matrix.md` and `docs/validation/evidence/`.

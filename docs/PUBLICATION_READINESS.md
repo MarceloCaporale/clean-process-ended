@@ -29,7 +29,7 @@ For tagged releases, registry submissions or npm publication, do not rely on loc
 - Codex: current local validation completed after restart, dry-run only.
 - Claude Code: current local native MCP validation completed, dry-run only.
 - Gemini CLI: current local native MCP validation completed, dry-run only. Public evidence is summary-level; capture raw tool JSON before external-audit parity claims.
-- Qwen Code CLI: current local native MCP validation completed with Ollama-backed Qwen models through a non-destructive MCP tool workflow. Public evidence is summary-level; capture full dry-run close-check evidence before claiming parity with Codex, Claude or Gemini dry-run evidence.
+- Qwen Code CLI: current local native MCP tool-invocation validation completed with Ollama-backed Qwen models through a non-destructive diagnostic workflow. Public evidence is summary-level; capture full dry-run close-check evidence before claiming parity with Codex, Claude or Gemini dry-run evidence.
 
 Do not upgrade any host status in `docs/support-matrix.md` without a matching evidence bundle or report.
 

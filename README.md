@@ -4,6 +4,8 @@
   <img src="docs/assets/clean-process-ended-social-preview.png" alt="clean-process-ended: local process hygiene for MCP agent workflows" width="100%">
 </p>
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/MarceloCaporale/clean-process-ended)
+
 Other languages: [Español](./README_ES.md) | [Deutsch](./README_DE.md) | [Português do Brasil](./README_PT_BR.md) | [中文](./README_ZH.md) | [日本語](./README_JA.md)
 
 **Ownership-first local MCP process janitor for AI coding agents, built for Codex Desktop, Claude Code, Gemini CLI, Qwen Code CLI non-destructive tool workflows with Ollama-backed Qwen models, and MCP-compatible host workflows where subprocesses can outlive the useful work.**
